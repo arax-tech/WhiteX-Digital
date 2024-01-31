@@ -19,11 +19,28 @@
 
 
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
-import { AuthReducer } from './reducers/AuthReducer';
+import { AuthReducer, ForgotPasswordReducer, UpdateProfileReducer } from './reducers/AuthReducer';
+import { AdminsReducer } from './reducers/Admin/AdminsReducer';
+import { SubscriptionReducer } from './reducers/Admin/SubscriptionReducer';
+import { ClientReducer } from './reducers/Admin/ClientReducer';
+import { TeamReducer } from './reducers/Client/TeamReducer';
+import { ClientSubscriptionReducer } from './reducers/Client/SubscriptionReducer';
 
 
 const reducer = combineReducers({
+    // Auth
     auth: AuthReducer,
+    profile : UpdateProfileReducer,
+    password : ForgotPasswordReducer,
+    
+    // Admin
+    admins : AdminsReducer,
+    clients : ClientReducer,
+    subscriptions : SubscriptionReducer,
+
+    // Client
+    teams : TeamReducer,
+    subscription : ClientSubscriptionReducer,
 });
 
 let initialState = {};

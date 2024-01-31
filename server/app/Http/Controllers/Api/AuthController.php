@@ -71,7 +71,7 @@ class AuthController extends Controller
             Auth::user()->otp = null;
             Auth::user()->save();
             return response()->json([
-                'status'  => 200,
+                'status'  => 202,
                 'message' => 'Login Successfully...',
                 'user'    => Auth::user(),
                 'token'   => Auth::user()->createToken('WhiteX')->plainTextToken,
@@ -96,33 +96,8 @@ class AuthController extends Controller
     public function profile()
     {
 		return response()->json([
-		   'status' => 200,
+		   'status' => 204,
 		   'user' => Auth::user(),
 		], 200);
     }
-
-
-
-
-	// public function register(Request $request)
-	// {
-	//     $check = User::where('email', $request->email)->count();
-	//     if ($check < 1) {
- //    		$user = New User();
- //    	    $user->name = $request->name;
- //    	    $user->email = $request->email;
- //    	    $user->password = Hash::make($request->password);
- //    	    $user->save();
-
- //    	    return response()->json([
- //    	       'status' => 200,
- //    	       'message'=> 'Registration Successfully...'
- //    	    ]);
-	//     }else{
-	//     	return response()->json([
-	//     	   'status' => 401,
-	//     	   'message'=> 'This email is already taken, Please use another email...'
-	//     	]);
-	//     }
-	// }
 }

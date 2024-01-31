@@ -3,9 +3,18 @@ import {
     LOGIN_REQUEST,
     LOGIN_SUCCESS,
     LOGIN_FAIL,
-
-
     
+    VERIFY_REQUEST,
+    VERIFY_SUCCESS,
+    VERIFY_FAIL,
+
+    FORGOT_PASSWORD_REQUEST,
+    FORGOT_PASSWORD_SUCCESS,
+    FORGOT_PASSWORD_FAIL,
+
+    RESET_PASSWORD_REQUEST,
+    RESET_PASSWORD_SUCCESS,
+    RESET_PASSWORD_FAIL,
 
     AUTH_USER_REQUEST,
     AUTH_USER_SUCCESS,
@@ -27,21 +36,14 @@ import {
 } from '../constants/AuthConstant'
 import { BaseURL } from '../constants/BaseURL';
 
+
 export const LoginAction = (email, password) => async (dispatch) => {
     try {
         dispatch({ type: LOGIN_REQUEST });
-
-        // Get the CSRF token from the meta tag in your HTML document
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-        
-
-        const { data } = await axios.post(
-            `${BaseURL}/api/auth/login`,
-            { email, password },
+        const { data } = await axios.post(`${BaseURL}/api/auth/login`, { email, password },
             {
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
                 },
             }
         );
@@ -51,22 +53,84 @@ export const LoginAction = (email, password) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        console.log(error.response.data);
         dispatch({
             type: LOGIN_FAIL,
             payload: error.response.data,
         });
     }
 };
+export const OtpVerifyAction = (otp) => async (dispatch) => {
+    try {
+        dispatch({ type: VERIFY_REQUEST });
+        const { data } = await axios.post(`${BaseURL}/api/auth/verify-otp`, { otp },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
 
+        dispatch({
+            type: VERIFY_SUCCESS,
+            payload: data,
+        });
+        console.log(data)
+    } catch (error) {
+        console.log(error.response.data);
+        dispatch({
+            type: VERIFY_FAIL,
+            payload: error.response.data,
+        });
+    }
+};
 
+export const ForgotPasswordAction = (email) => async (dispatch) => {
+    try {
+        dispatch({ type: FORGOT_PASSWORD_REQUEST });
+        const { data } = await axios.post(`${BaseURL}/api/auth/password/forgot`, { email },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        dispatch({
+            type: FORGOT_PASSWORD_SUCCESS,
+            payload: data,
+        });
+    } catch (error) {
+        dispatch({
+            type: FORGOT_PASSWORD_FAIL,
+            payload: error.response.data,
+        });
+    }
+};
 
-
-
+export const ResetPasswordAction = (reset_token, password) => async (dispatch) => {
+    try {
+        dispatch({ type: RESET_PASSWORD_REQUEST });
+        const { data } = await axios.post(`${BaseURL}/api/auth/password/reset/${reset_token}`, { password },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        dispatch({
+            type: RESET_PASSWORD_SUCCESS,
+            payload: data,
+        });
+    } catch (error) {
+        dispatch({
+            type: RESET_PASSWORD_FAIL,
+            payload: error.response.data,
+        });
+    }
+};
 
 export const AuthUserAction = () => async (dispatch) => {
     try {
-        console.log('here');
+        // console.log('here');
 
         dispatch({ type: AUTH_USER_REQUEST });
 
@@ -85,6 +149,7 @@ export const AuthUserAction = () => async (dispatch) => {
             payload: data
         })
     } catch (error) {
+        
         dispatch({
             type: AUTH_USER_FAIL,
             payload: error.response.data
@@ -100,7 +165,7 @@ export const ProfileUpdateAction = (formData) => async (dispatch) => {
 
         const role = localStorage.getItem("role");
         const token = localStorage.getItem('token');
-        const { data } = await axios.patch(`${BaseURL}/api/${role}/profile`, formData, {
+        const { data } = await axios.post(`${BaseURL}/api/${role}/update/profile`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 "Authorization": `Bearer ${token}`
@@ -121,9 +186,6 @@ export const ProfileUpdateAction = (formData) => async (dispatch) => {
 }
 
 
-
-
-
 export const PasswordUpdateAction = (current_password, new_password) => async (dispatch) => {
     try {
         dispatch({ type: UPDATE_PASSWORD_REQUEST });
@@ -135,7 +197,7 @@ export const PasswordUpdateAction = (current_password, new_password) => async (d
             new_password: new_password,
         };
 
-        const { data } = await axios.patch(`${BaseURL}/api/${role}/password/update`, bodyParameters, {
+        const { data } = await axios.post(`${BaseURL}/api/${role}/update/password`, bodyParameters, {
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
@@ -153,7 +215,7 @@ export const PasswordUpdateAction = (current_password, new_password) => async (d
     }
 }
 
-export const AuthLogout = () => async (dispatch) => {
+export const AuthLogoutAction = () => async (dispatch) => {
     try {
 
         const token = localStorage.getItem('token');
@@ -163,10 +225,13 @@ export const AuthLogout = () => async (dispatch) => {
                 "Authorization": `Bearer ${token}`
             }
         });
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
         dispatch({
             type: AUTH_LOGOUT_SUCCESS,
             payload: data
         })
+        window.location.href = "/";
     } catch (error) {
         dispatch({
             type: AUTH_LOGOUT_FAIL,

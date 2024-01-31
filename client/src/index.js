@@ -14,7 +14,6 @@ import Store from "./redux/Store";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <Provider store={Store}>
-
         <BrowserRouter>
             <ToastContainer
                 position="bottom-right"

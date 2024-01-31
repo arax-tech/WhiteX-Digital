@@ -3,6 +3,6 @@
 <br><br>
 <b>OTP : </b>{{ $details['otp'] }}
 <br><br>
-Thanks,<br>
+Best Regards,<br>
 {{ config('app.name') }}
 @endcomponent

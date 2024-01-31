@@ -3,11 +3,23 @@ import {
     LOGIN_SUCCESS,
     LOGIN_FAIL,
 
+    VERIFY_REQUEST,
+    VERIFY_SUCCESS,
+    VERIFY_FAIL,
+
     AUTH_USER_REQUEST,
     AUTH_USER_SUCCESS,
     AUTH_USER_FAIL,
 
 
+    FORGOT_PASSWORD_REQUEST,
+    FORGOT_PASSWORD_SUCCESS,
+    FORGOT_PASSWORD_FAIL,
+    
+    RESET_PASSWORD_REQUEST,
+    RESET_PASSWORD_SUCCESS,
+    RESET_PASSWORD_FAIL,
+   
     UPDATE_PROFILE_REQUEST,
     UPDATE_PROFILE_SUCCESS,
     UPDATE_PROFILE_FAIL,
@@ -26,8 +38,10 @@ import {
 
 
 export const AuthReducer = (state = { user: {} }, action) => {
+    console.log(action.payload?.status);
     switch (action.type) {
         case LOGIN_REQUEST:
+        case VERIFY_REQUEST:
             return {
                 ...state,
                 loading: true,
@@ -42,13 +56,21 @@ export const AuthReducer = (state = { user: {} }, action) => {
             return {
                 ...state,
                 loading: false,
+                message: action.payload.message,
+                status: action.payload.status,
+            };
+        case VERIFY_SUCCESS:
+            return {
+                ...state,
+                loading: false,
                 isAuthenticated: true,
                 message: action.payload.message,
                 status: action.payload.status,
-                user: action.payload.user,
                 token: action.payload.token,
+                user: action.payload.user,
+                menus: action.payload.menus,
             };
-       
+
 
         case AUTH_USER_SUCCESS:
             return {
@@ -56,12 +78,14 @@ export const AuthReducer = (state = { user: {} }, action) => {
                 loading: false,
                 isAuthenticated: true,
                 user: action.payload.user,
+                menus: action.payload.menus,
             };
 
         case AUTH_LOGOUT_SUCCESS:
             return {
                 loading: false,
                 isAuthenticated: false,
+                user: null,
                 message: action.payload.message,
                 status: action.payload.status,
             };
@@ -69,6 +93,7 @@ export const AuthReducer = (state = { user: {} }, action) => {
 
 
         case LOGIN_FAIL:
+        case VERIFY_FAIL:
         case AUTH_USER_FAIL:
             return {
                 ...state,
@@ -76,21 +101,16 @@ export const AuthReducer = (state = { user: {} }, action) => {
                 isAuthenticated: false,
                 message: action.payload.message,
                 status: action.payload.status,
-                errors: action.payload,
             };
         case AUTH_LOGOUT_FAIL:
             return {
                 loading: false,
-                isAuthenticated: false,
-                user: null,
-                errors: action.payload,
-            };
-
+            }
         case CLEAR_ERRORS:
             return {
                 ...state,
-                errors: null
-
+                message: null,
+                status: null,
             }
 
         default:
@@ -98,7 +118,7 @@ export const AuthReducer = (state = { user: {} }, action) => {
     }
 }
 
-export const updateProfileReducer = (state = {}, action) => {
+export const UpdateProfileReducer = (state = {}, action) => {
     switch (action.type) {
         case UPDATE_PROFILE_REQUEST:
         case UPDATE_PASSWORD_REQUEST:
@@ -123,7 +143,6 @@ export const updateProfileReducer = (state = {}, action) => {
                 loading: false,
                 message: action.payload.message,
                 status: action.payload.status,
-                errors: action.payload,
             };
         case UPDATE_PROFILE_RESET:
         case UPDATE_PASSWORD_RESET:
@@ -134,7 +153,7 @@ export const updateProfileReducer = (state = {}, action) => {
         case CLEAR_ERRORS:
             return {
                 ...state,
-                errors: null,
+                message: null,
                 status: null
             };
 
@@ -144,3 +163,45 @@ export const updateProfileReducer = (state = {}, action) => {
 }
 
 
+export const ForgotPasswordReducer = (state = {}, action) => {
+    switch (action.type) {
+        case FORGOT_PASSWORD_REQUEST:
+        case RESET_PASSWORD_REQUEST:
+            return {
+                ...state,
+                loading: true,
+            };
+
+        case FORGOT_PASSWORD_SUCCESS:
+        case RESET_PASSWORD_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                isUpdated: true,
+                status: action.payload.status,
+                message: action.payload.message,
+            };
+
+
+        case FORGOT_PASSWORD_FAIL:
+        case RESET_PASSWORD_FAIL:
+            return {
+                ...state,
+                loading: false,
+                isUpdated: false,
+                status: action.payload.status,
+                message: action.payload.message,
+            };
+
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                status: null,
+                message: null,
+                isUpdated: null,
+            };
+
+        default:
+            return state;
+    }
+}
