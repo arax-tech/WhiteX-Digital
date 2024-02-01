@@ -57,6 +57,10 @@ Route::group(['namespace' => 'Api\Admin', 'prefix' => 'admin', 'middleware' => [
 	Route::get('/menu/single/{id}', 'MenuController@single');
 	Route::post('/menu/update/{id}', 'MenuController@update');
 	Route::get('/menu/delete/{id}', 'MenuController@delete');
+
+	// Credits
+	Route::get('/client/credit/{id}','ClientController@credit');
+	Route::post('/client/editcredit','ClientController@editCredit');
 });
 
 
@@ -103,4 +107,11 @@ Route::group(['namespace' => 'Api\Client', 'prefix' => 'client', 'middleware' =>
 	Route::get('/feedback/single/{id}', 'FeedbackController@single');
 	Route::post('/feedback/update/{id}', 'FeedbackController@update');
 	Route::get('/feedback/delete/{id}', 'FeedbackController@delete');
+});
+
+// Campaign
+Route::group(['namespace' => 'Api\Campaign', 'prefix' => 'campaign', 'middleware' => ['auth:sanctum']], function (){
+	Route::get('/', 'CampaignController@index');
+	Route::post('/store', 'CampaignController@store');
+	Route::get('/{id}', 'CampaignController@show');
 });

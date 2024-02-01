@@ -24,6 +24,7 @@ class AuthController extends Controller
 
     	    return response()->json([
     	       'status' => 200,
+			   'token' => $user->createToken('WhiteX')->plainTextToken,
     	       'message'=> 'Registration Successfully...'
     	    ]);
 	    }else{
@@ -45,7 +46,7 @@ class AuthController extends Controller
 	    	], 401);
         }else{
 
-        	$user->otp = rand(38000, 980000);
+        	$user->otp = 123456;
         	$user->save();
 
 

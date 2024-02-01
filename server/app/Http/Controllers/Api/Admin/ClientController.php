@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Credit;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Hash;
@@ -93,6 +94,57 @@ class ClientController extends Controller
 		   'status' => 200,
 		   'message' => 'Client Delete Successfuly...',
 		], 200);
+    }
+	public function credit($id)
+    {
+		if(! Credit::where('user_id',$id)->first()){
+			Credit::insert([
+				['type' => 'email', 'credits' => 0, 'user_id' => $id],
+				['type' => 'sms', 'credits' => 0, 'user_id' => $id],
+				['type' => 'chatbot', 'credits' => 0, 'user_id' => $id],
+			]);
+		}
+    	$user= User::find($id);
+		if($user){
+			$credits = Credit::where('user_id',$user->id)->get()->toArray();
+			if($credits){
+				return response()->json([
+					'status' => 200,
+					'credits' => $credits,
+				 ], 200);
+			}else{
+				return response()->json([
+					'status' => 500,
+					'message' => 'Credits Not Found...',
+				 ], 200);
+			}
+		}else{
+			return response()->json([
+				'status' => 500,
+				'message' => 'Client Not Found...',
+			 ], 200);
+		}
+    }
+	public function editCredit(Request $request)
+    {
+    	$user= User::find($request->user_id);
+		if($user){
+			$credit = Credit::where('user_id',$request->user->id)->where('type',$request->c_type)->first();
+			if($request->type == 'sum'){
+				$credit->credits -= $request->credit;
+			}elseif($request->type == 'add'){
+				$credit->credits += $request->credit;
+			}
+			return response()->json([
+				'status' => 200,
+				'credit' => $credit,
+			 ], 200);
+		}else{
+			return response()->json([
+				'status' => 500,
+				'message' => 'Client Not Found...',
+			 ], 200);
+		}
     }
     
 }
