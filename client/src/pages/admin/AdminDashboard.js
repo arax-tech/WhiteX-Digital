@@ -9,6 +9,7 @@ import { UncombineAdminPermissions } from './Permissions';
 const AdminDashboard = () => {
     const { user } = useSelector((state) => state.auth);
     const allPermissions = UncombineAdminPermissions(user.permissions);
+
     return (
         <div className="content-wrapper">
             <MetaData title="Admin - Dashboard" />

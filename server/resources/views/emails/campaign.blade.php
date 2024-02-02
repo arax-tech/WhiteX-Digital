@@ -101,7 +101,7 @@ table, td { color: #000000; } @media (max-width: 480px) { #u_row_1 .v-row-backgr
         <v:fill type="frame" src="https://cdn.templates.unlayer.com/assets/1705470433434-bg.png" /><v:textbox style="mso-fit-shape-to-text:true" inset="0,0,0,0">
       <![endif]-->
   
-<div id="u_row_1" class="u-row-container v-row-background-image--outer" style="padding: 0px;background-image: url('{{ asset('asset/emails/image-1.png') }}');background-repeat: no-repeat;background-position: center top;background-color: transparent">
+<div id="u_row_1" class="u-row-container v-row-background-image--outer" style="padding: 0px;background-image: url('{{ asset('assets/email/image-1.png') }}');background-repeat: no-repeat;background-position: center top;background-color: transparent">
   <div class="u-row" style="margin: 0 auto;min-width: 320px;max-width: 600px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;">
     <div class="v-row-background-image--inner" style="border-collapse: collapse;display: table;width: 100%;height: 100%;background-color: transparent;">
       <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="v-row-background-image--outer" style="padding: 0px;background-image: url('images/image-1.png');background-repeat: no-repeat;background-position: center top;background-color: transparent;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:600px;"><tr class="v-row-background-image--inner" style="background-color: transparent;"><![endif]-->
@@ -120,7 +120,7 @@ table, td { color: #000000; } @media (max-width: 480px) { #u_row_1 .v-row-backgr
   <tr>
     <td style="padding-right: 0px;padding-left: 0px;" align="center">
       
-      <img align="center" border="0" src="{{ asset('asset/emails/image-2.png') }}" alt="image" title="image" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 600px;" width="600"/>
+      <img align="center" border="0" src="{{ asset('assets/email/image-2.png') }}" alt="image" title="image" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 600px;" width="600"/>
       
     </td>
   </tr>

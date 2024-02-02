@@ -47,12 +47,11 @@ export const LoginAction = (email, password) => async (dispatch) => {
                 },
             }
         );
-
         dispatch({
             type: LOGIN_SUCCESS,
             payload: data,
         });
-    } catch (error) {
+    } catch (error) { 
         dispatch({
             type: LOGIN_FAIL,
             payload: error.response.data,

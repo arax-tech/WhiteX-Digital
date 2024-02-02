@@ -3,6 +3,12 @@ export const AdminInitialPermissions = {
     CreateAdmin: false, ReadAdmin: false, UpdateAdmin: false, DeleteAdmin: false,
     // Client
     CreateClient: false, ReadClient: false, UpdateClient: false, DeleteClient: false,
+    // Campaigns
+    CreateCampaign: false, ReadCampaign: false, UpdateCampaign: false, DeleteCampaign: false,
+    // Credit
+    CreateCredit: false, ReadCredit: false, UpdateCredit: false, DeleteCredit: false,
+    // Config
+    CreateConfig: false, ReadConfig: false, UpdateConfig: false, DeleteConfig: false,
     // Subscription
     CreateSubscription: false, ReadSubscription: false, UpdateSubscription: false, DeleteSubscription: false,
     // CancellationRequests

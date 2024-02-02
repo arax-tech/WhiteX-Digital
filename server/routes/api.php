@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Http\Request;
@@ -61,6 +62,8 @@ Route::group(['namespace' => 'Api\Admin', 'prefix' => 'admin', 'middleware' => [
 	// Credits
 	Route::get('/client/credit/{id}','ClientController@credit');
 	Route::post('/client/editcredit','ClientController@editCredit');
+
+	Route::post('/config/api','AdminController@apiKey');
 });
 
 
@@ -114,4 +117,5 @@ Route::group(['namespace' => 'Api\Campaign', 'prefix' => 'campaign', 'middleware
 	Route::get('/', 'CampaignController@index');
 	Route::post('/store', 'CampaignController@store');
 	Route::get('/{id}', 'CampaignController@show');
+	Route::post('/delete/{id}', 'CampaignController@destroy');
 });

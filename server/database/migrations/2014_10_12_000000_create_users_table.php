@@ -21,6 +21,7 @@ class CreateUsersTable extends Migration
             $table->string('otp')->nullable();
             $table->string('reset_token')->nullable();
             $table->string('image')->nullable();
+            $table->string('ghl_id')->nullable();
             $table->string('role')->default('Client');
             $table->text('permissions')->nullable();
             $table->rememberToken();

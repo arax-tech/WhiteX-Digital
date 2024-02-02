@@ -12,6 +12,8 @@ class Campaign extends Model
         'type',
         'body',
         'status',
+        'flag',
+        'subject',
         'user_id'
     ];
 }

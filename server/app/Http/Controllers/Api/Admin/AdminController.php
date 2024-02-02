@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\URL;
 
 use Illuminate\Http\Request;
 use App\CustomMenu;
+use App\Settings;
 use App\User;
 use Auth;
 use DB;
@@ -45,5 +46,26 @@ class AdminController extends Controller
 		   'message' => 'Profile Updated Successfuly...',
 		   'user' => Auth::user(),
 		], 200);
+    }
+	public function apiKey(Request $request)
+    {
+    	$config = Settings::where('type', $request->type)->first();
+		if(!$config){
+			$config = new Settings();
+			$config->type = $request->type;
+			$config->value = $request->value;
+			$config->save();
+			return response()->json([
+			'status' => 200,
+			'message' => "key Updated",
+			], 200);
+		}else{
+			$config->value = $request->value;
+			$config->save();
+			return response()->json([
+			'status' => 200,
+			'message' => "key Updated",
+			], 200);
+		}
     }
 }

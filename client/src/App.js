@@ -23,6 +23,16 @@ import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminProfile from './pages/admin/AdminProfile'
 import AdminPassword from './pages/admin/AdminPassword'
 
+// Campaigns
+import Createcampaign from './pages/admin/campaigns/Createcampaign'
+import ViewALLCampaigns from './pages/admin/campaigns/ViewALLCampaigns'
+import ViewCampaign from './pages/admin/campaigns/ViewCampaign'
+
+// Admin Config
+import Adminconfig from './pages/admin/config/Adminconfig'
+
+// Credit
+import Viewcredits from './pages/admin/credit/Viewcredits';
 
 import AdminAdmins from './pages/admin/admins/AdminAdmins'
 
@@ -44,82 +54,89 @@ import ClientSubscription from './pages/client/subscription/ClientSubscription'
 
 const App = () => {
 
-    // eslint-disable-next-line 
-    useEffect(() => {
-        Store.dispatch(AuthUserAction());
-    }, []);
+  // eslint-disable-next-line 
+  useEffect(() => {
+    Store.dispatch(AuthUserAction());
+  }, []);
 
 
 
-    return (
-        <React.Fragment>
+  return (
+    <React.Fragment>
 
-            <Routes>
-                {/* Authentication Routes */}
-                <Route path='/' element={<Navigate to='/login' />} />
-                <Route path='/login' element={<Login />} />
-                <Route path='/verify' element={<Verify />} />
-                <Route path='/forgot/password' element={<ForgotPassword />} />
-                <Route path='/reset/password/:reset_token' element={<ResetPassword />} />
+      <Routes>
+        {/* Authentication Routes */}
+        <Route path='/' element={<Navigate to='/login' />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/verify' element={<Verify />} />
+        <Route path='/forgot/password' element={<ForgotPassword />} />
+        <Route path='/reset/password/:reset_token' element={<ResetPassword />} />
+
+        {/* Admin Routes */}
+        <Route path='/admin/*' element={<AdminLayout />}>
+          <Route element={<Admin />}>
+            <Route path='profile' element={<AdminProfile />} />
+            <Route path='password' element={<AdminPassword />} />
+            <Route path='dashboard' element={<AdminDashboard />} />
+            {/* Admin */}
+            <Route path='admin' element={<AdminAdmins />} />
+            <Route path='admin/create' element={<AdminAdminCreate />} />
+            <Route path='edit/admin/:id' element={<AdminAdminUpdate />} />
+            {/* Client */}
+            <Route path='client' element={<AdminClient />} />
+            <Route path='client/create' element={<AdminClientCreate />} />
+
+            {/* Campaigns */}
+            <Route path='campaign/create' element={<Createcampaign />} />
+            <Route path='campaign/view' element={<ViewALLCampaigns />} />
+            <Route path='campaign/view/:id' element={<ViewCampaign />} />
+
+            {/* Config */}
+            <Route path='config' element={<Adminconfig />} />
+
+            {/* Credit */}
+            <Route path='credit/view' element={<Viewcredits />} />
+
+            {/* Client */}
+
+            <Route path='client/edit/:id' element={<AdminClientUpdate />} />
+            {/* Subscription */}
+            <Route path='subscription' element={<AdminSubscription />} />
+            <Route path='*' element={<PageNotFound />} />
+          </Route>
+        </Route>
+
+        {/* Client Routes */}
+        <Route path='/client/*' element={<ClientLayout />}>
+          <Route element={<Client />}>
+            <Route path='profile' element={<ClientProfile />} />
+            <Route path='password' element={<ClientPassword />} />
+            <Route path='dashboard' element={<ClientDashboard />} />
+            {/* Team */}
+            <Route path='team' element={<ClientTeam />} />
+            <Route path='team/create' element={<ClientTeamCreate />} />
+            <Route path='team/edit/:id' element={<ClientTeamUpdate />} />
+
+            {/* Campaigns */}
+            <Route path='campaign/create' element={<Createcampaign />} />
+            <Route path='campaign/view' element={<ViewALLCampaigns />} />
+            <Route path='campaign/view/:id' element={<ViewCampaign />} />
+
+            {/* Subscription */}
+            <Route path='subscription' element={<ClientSubscription />} />
+
+            <Route path='*' element={<PageNotFound />} />
+          </Route>
+        </Route>
 
 
+        {/* 404 */}
+        <Route path='*' element={<PageNotFound />} />
+      </Routes>
 
-                {/* Admin Routes */}
-                <Route path='/admin/*' element={<AdminLayout />}>
-                    <Route element={<Admin />}>
-                        <Route path='profile' element={<AdminProfile />} />
-                        <Route path='password' element={<AdminPassword />} />
+    </React.Fragment>
 
-                        <Route path='dashboard' element={<AdminDashboard />} />
-
-                        {/* Admin */}
-                        <Route path='admin' element={<AdminAdmins />} />
-                        <Route path='admin/create' element={<AdminAdminCreate />} />
-                        <Route path='edit/admin/:id' element={<AdminAdminUpdate />} />
-
-
-                        {/* Client */}
-                        <Route path='client' element={<AdminClient />} />
-                        <Route path='client/create' element={<AdminClientCreate />} />
-                        <Route path='client/edit/:id' element={<AdminClientUpdate />} />
-
-                        {/* Subscription */}
-                        <Route path='subscription' element={<AdminSubscription />} />
-
-
-                        <Route path='*' element={<PageNotFound />} />
-                    </Route>
-                </Route>
-                
-                
-                {/* Client Routes */}
-                <Route path='/client/*' element={<ClientLayout />}>
-                    <Route element={<Client />}>
-                        <Route path='profile' element={<ClientProfile />} />
-                        <Route path='password' element={<ClientPassword />} />
-
-                        <Route path='dashboard' element={<ClientDashboard />} />
-                        
-                        {/* Team */}
-                        <Route path='team' element={<ClientTeam />} />
-                        <Route path='team/create' element={<ClientTeamCreate />} />
-                        <Route path='team/edit/:id' element={<ClientTeamUpdate />} />
-
-                        {/* Subscription */}
-                        <Route path='subscription' element={<ClientSubscription />} />
-
-                        <Route path='*' element={<PageNotFound />} />
-                    </Route>
-                </Route>
-
-
-                {/* 404 */}
-                <Route path='*' element={<PageNotFound />} />
-            </Routes>
-
-        </React.Fragment>
-
-    )
+  )
 }
 
 export default App

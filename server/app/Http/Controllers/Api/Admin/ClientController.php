@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Campaign;
 use App\Credit;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\URL;
@@ -97,16 +98,24 @@ class ClientController extends Controller
     }
 	public function credit($id)
     {
-		if(! Credit::where('user_id',$id)->first()){
+		if(! Credit::where('user_id',$id)->where('type','email')->first()){
 			Credit::insert([
 				['type' => 'email', 'credits' => 0, 'user_id' => $id],
+			]);
+		}
+		if(! Credit::where('user_id',$id)->where('type','sms')->first()){
+			Credit::insert([
 				['type' => 'sms', 'credits' => 0, 'user_id' => $id],
+			]);
+		}
+		if(! Credit::where('user_id',$id)->where('type','chatbot')->first()){
+			Credit::insert([
 				['type' => 'chatbot', 'credits' => 0, 'user_id' => $id],
 			]);
 		}
     	$user= User::find($id);
 		if($user){
-			$credits = Credit::where('user_id',$user->id)->get()->toArray();
+			$credits = Credit::where('user_id',$user->id)->get();
 			if($credits){
 				return response()->json([
 					'status' => 200,
@@ -129,12 +138,18 @@ class ClientController extends Controller
     {
     	$user= User::find($request->user_id);
 		if($user){
-			$credit = Credit::where('user_id',$request->user->id)->where('type',$request->c_type)->first();
+			$credit = Credit::where('user_id',$request->user_id)->where('type',$request->c_type)->first();
 			if($request->type == 'sum'){
 				$credit->credits -= $request->credit;
 			}elseif($request->type == 'add'){
 				$credit->credits += $request->credit;
+				// update users campaigns
+				Campaign::where('user_id',$request->user_id)
+				->where('flag', 1)->update([
+					'flag' => 0
+				]);
 			}
+			$credit->save();
 			return response()->json([
 				'status' => 200,
 				'credit' => $credit,

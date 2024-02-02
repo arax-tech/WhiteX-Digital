@@ -29,6 +29,7 @@ class CampaignController extends Controller
         return response()->json([
             'status' => 200,
             'campaign' => $campaigns,
+            'rate' =>1,
          ], 200);
     }
 

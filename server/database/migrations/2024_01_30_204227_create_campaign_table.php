@@ -17,8 +17,10 @@ class CreateCampaignTable extends Migration
             $table->id();
             $table->string('title')->nullable();
             $table->string('type')->nullable();
+            $table->string('subject')->nullable();
             $table->longText('body')->nullable();
             $table->boolean('status')->default(1);
+            $table->boolean('flag')->default(0);
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->on('users')->references('id')->onDelete('cascade');
             $table->timestamps();
