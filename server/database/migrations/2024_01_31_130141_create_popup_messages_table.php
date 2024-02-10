@@ -16,7 +16,11 @@ class CreatePopupMessagesTable extends Migration
         Schema::create('popup_messages', function (Blueprint $table) {
             $table->id();
             $table->integer('client_id');
-            $table->text('message');
+            $table->text('content');
+            $table->string('trigger_event')->nullable();
+            $table->string('visibility_start')->nullable();
+            $table->string('visibility_end')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }

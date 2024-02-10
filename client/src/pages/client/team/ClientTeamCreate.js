@@ -19,6 +19,7 @@ const ClientTeamCreate = () => {
     const [image, setImage] = useState();
     const [data, setData] = useState({
         name: '',
+        password: '',
         email: '',
         designation: '',
     })
@@ -81,6 +82,7 @@ const ClientTeamCreate = () => {
         const formData = new FormData();
         formData.append("name", data.name);
         formData.append("email", data.email);
+        formData.append("password", data.password);
         formData.append("image", image);
         formData.append("designation", data.designation);
         formData.append("role", "Team");
@@ -129,6 +131,12 @@ const ClientTeamCreate = () => {
                                                 <div className="form-group">
                                                     <label className="form-label">Email</label>
                                                     <input type="text" className="form-control" onChange={InpChnage} value={data.email} name='email' required />
+                                                </div>
+                                            </div>
+                                            <div className='col'>
+                                                <div className="form-group">
+                                                    <label className="form-label">Password</label>
+                                                    <input type="password" className="form-control" onChange={InpChnage} value={data.password} name='password' required />
                                                 </div>
                                             </div>
 

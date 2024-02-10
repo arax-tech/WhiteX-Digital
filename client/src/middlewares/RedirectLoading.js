@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import FullLoading from "../components/FullLoading";
 
 const RedirectLoading = () => {
-    const [count, setCount] = useState(1);
+    const [count, setCount] = useState(3);
 
     useEffect(() => {
         const interval = setInterval(() => {

@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import { UncombineAdminPermissions } from '../Permissions';
 import { DeleteClientAction, GetClientsAction } from '../../../redux/actions/Admin/ClientAction';
 import { DELETE_CLIENT_RESET } from '../../../redux/constants/Admin/ClientConstant';
+import $ from 'jquery';
 const AdminClient = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -16,6 +17,10 @@ const AdminClient = () => {
     const { loading, clients, isDeleted, message } = useSelector((state) => state.clients);
     const { user } = useSelector((state) => state.auth);
     const allPermissions = UncombineAdminPermissions(user.permissions);
+
+    useEffect(() => {
+        $('#MyTable').DataTable();
+    }, []);
 
     useEffect(() => {
         if (allPermissions && !allPermissions.ReadClient) {
@@ -58,55 +63,53 @@ const AdminClient = () => {
                                 }
                             </div>
 
-                            {
-                                loading ? <LoadingTable /> : (
-                                    <div className="table-responsive">
-                                        <table className="table table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th>Client</th>
-                                                    <th>Email</th>
-                                                    <th>Designation</th>
-                                                    <th>RegisterAt</th>
-                                                    <th>Actions</th>
+
+                            <div className="table-responsive">
+                                <table id='MyTable' className="table table-hover px-1">
+                                    <thead>
+                                        <tr>
+                                            <th>Client</th>
+                                            <th>Email</th>
+                                            <th>Designation</th>
+                                            <th>RegisterAt</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {
+                                            clients?.map((client, index) => (
+                                                <tr key={index}>
+                                                    <td>
+                                                        <img src={client?.image?.length > 0 ? client?.image : "/placeholder.jpg"} className="mr-75 img-thumbnail " height="40" width="40" alt="Angular" />
+                                                        <span className="font-weight-bold">{client?.name}</span>
+                                                    </td>
+                                                    <td>{client?.email}</td>
+                                                    <td>{client?.designation}</td>
+                                                    <td>{moment(client?.created_at).format('DD MMM yyyy, hh:mm A')}</td>
+
+                                                    <td>
+                                                        <div className="btn-group">
+                                                            {
+                                                                allPermissions.UpdateClient && (
+                                                                    <Link to={`/admin/client/edit/${client?.id}`} className='btn btn-success btn-sm'><Edit style={{ width: 14, height: 14 }} /></Link>
+                                                                )
+                                                            }
+                                                            {
+                                                                allPermissions.DeleteClient && (
+                                                                    <button onClick={() => DeleteClient(client?.id)} className='btn btn-danger btn-sm'><Trash style={{ width: 14, height: 14 }} /></button>
+                                                                )
+                                                            }
+                                                        </div>
+                                                    </td>
                                                 </tr>
-                                            </thead>
-                                            <tbody>
-                                                {
-                                                    clients?.map((client, index) => (
-                                                        <tr key={index}>
-                                                            <td>
-                                                                <img src={client?.image?.length > 0 ? client?.image : "/placeholder.jpg"} className="mr-75 img-thumbnail " height="40" width="40" alt="Angular" />
-                                                                <span className="font-weight-bold">{client?.name}</span>
-                                                            </td>
-                                                            <td>{client?.email}</td>
-                                                            <td>{client?.designation}</td>
-                                                            <td>{moment(client?.created_at).format('DD MMM yyyy, hh:mm A')}</td>
-
-                                                            <td>
-                                                                <div className="btn-group">
-                                                                    {
-                                                                        allPermissions.UpdateClient && (
-                                                                            <Link to={`/admin/client/edit/${client?.id}`} className='btn btn-success btn-sm'><Edit style={{ width: 14, height: 14 }} /></Link>
-                                                                        )
-                                                                    }
-                                                                    {
-                                                                        allPermissions.DeleteClient && (
-                                                                            <button onClick={() => DeleteClient(client?.id)} className='btn btn-danger btn-sm'><Trash style={{ width: 14, height: 14 }} /></button>
-                                                                        )
-                                                                    }
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    ))
-                                                }
+                                            ))
+                                        }
 
 
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                )
-                            }
+                                    </tbody>
+                                </table>
+                            </div>
+
 
                         </div>
                     </div>

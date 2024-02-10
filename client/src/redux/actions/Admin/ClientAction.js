@@ -4,6 +4,11 @@ import {
     CLIENT_SUCCESS,
     CLIENT_FAIL,
 
+    CUSTOMER_REQUEST,
+    CUSTOMER_SUCCESS,
+    CUSTOMER_FAIL,
+
+
     SINGLE_CLIENT_REQUEST,
     SINGLE_CLIENT_SUCCESS,
     SINGLE_CLIENT_FAIL,
@@ -42,6 +47,33 @@ export const GetClientsAction = () => async (dispatch) => {
     catch (error) {
         dispatch({
             type: CLIENT_FAIL,
+            payload: error.response.data.message
+        })
+    }
+};
+
+
+export const GetCustomersAction = () => async (dispatch) => {
+    try {
+        dispatch({ type: CUSTOMER_REQUEST });
+        const { data } = await axios.get(
+            'https://whitexdigital.com/wp-json/wc/v3/customers',
+            {
+                params: {
+                    role:'all',
+                    consumer_key: process.env.REACT_APP_WC_CONSUMER_KEY,
+                    consumer_secret: process.env.REACT_APP_WC_CONSUMER_SECRET,
+                },
+            }
+        );
+        dispatch({
+            type: CUSTOMER_SUCCESS,
+            payload: data
+        })
+    }
+    catch (error) {
+        dispatch({
+            type: CUSTOMER_FAIL,
             payload: error.response.data.message
         })
     }

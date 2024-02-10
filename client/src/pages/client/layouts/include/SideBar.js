@@ -11,7 +11,7 @@ const SideBar = () => {
     const location = useLocation();
     const dispatch = useDispatch();
 
-    const { user, menus } = useSelector((state) => state.auth);
+    const { user, menus, setting } = useSelector((state) => state.auth);
 
     const IsActive = location.pathname;
     const AuthLogoutFunction = () => {
@@ -29,8 +29,11 @@ const SideBar = () => {
                     <ul className="nav navbar-nav flex-row">
                         <li className="nav-item mr-auto">
                             <Link className="navbar-brand" to="/client/dashboard">
-                                <span className="brand-logo"></span>
-                                <h2 className="brand-text">Client</h2>
+                                <span className="brand-logo">
+                                </span>
+                                <h2 className="brand-text">
+                                    <img style={{ width: '100%', height: '40px' }} src={setting?.menu_logo} alt={setting?.company_name} />
+                                </h2>
                             </Link>
                         </li>
                         <li className="nav-item nav-toggle"><Link className="nav-link modern-nav-toggle pr-0" data-toggle="collapse"><i className="d-block d-xl-none text-primary toggle-icon font-medium-4" data-feather="x"></i><i className="d-none d-xl-block collapse-toggle-icon font-medium-4  text-primary" data-feather="disc" data-ticon="disc"></i></Link></li>
@@ -38,7 +41,8 @@ const SideBar = () => {
                 </div>
                 <div className="shadow-bottom"></div>
                 <div className="main-menu-content">
-                    <ul className="navigation navigation-main" >
+
+                    <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
 
                         <li className=" navigation-header"><span>Main</span><i data-feather="more-horizontal"></i></li>
 
@@ -67,8 +71,8 @@ const SideBar = () => {
                         }
                         {
                             allPermissions.ReadCancellationRequests && (
-                                <li className={IsActive === "/client/cancellation/requests" ? ' nav-item active' : ' nav-item'}>
-                                    <Link className="d-flex align-items-center" to="/client/cancellation/requests"><AlertTriangle /><span className="menu-title text-truncate">Cancellation Requests</span></Link>
+                                <li className={IsActive === "/client/subscription/cancellation" ? ' nav-item active' : ' nav-item'}>
+                                    <Link className="d-flex align-items-center" to="/client/subscription/cancellation"><AlertTriangle /><span className="menu-title text-truncate">Cancellation Requests</span></Link>
                                 </li>
                             )
                         }
@@ -149,6 +153,7 @@ const SideBar = () => {
                                     {
                                         menus?.map((menu, index) => (
                                             <OverlayTrigger
+                                                key={index}
                                                 placement="top"
                                                 elay={{ show: 10, hide: 10 }}
                                                 offset={[-20, -8]}
@@ -158,22 +163,21 @@ const SideBar = () => {
                                                     </Tooltip>
                                                 )}
                                             >
-                                                <li key={index} className='nav-item'>
-                                                    <Link
-                                                        to={menu.link}
-                                                        className="d-flex align-items-center"
-                                                        style={{ color: 'gray' }}
-                                                    >
-                                                        <Menu style={{ color: 'gray' }} />
-                                                        {
-                                                            menu?.status === "Active" ? (
+                                                <li className='nav-item'>
+                                                    {
+                                                        menu?.status === "Active" ? (
+                                                            <Link target='_blank' to={menu.link} className="d-flex align-items-center" >
+                                                                <Menu />
                                                                 <span className="menu-title text-truncate">{menu?.name}</span>
-                                                            ) : (
+                                                            </Link>
+                                                        ) : (
+                                                            <Link onClick={(event) => event.preventDefault()} to={'#'} className="d-flex align-items-center" style={{ color: 'gray' }}>
+                                                                <Menu style={{ color: 'gray' }} />
                                                                 <span className="menu-title text-truncate" style={{ color: '#676D7D' }}>{menu.name}</span>
+                                                            </Link>
+                                                        )
+                                                    }
 
-                                                            )
-                                                        }
-                                                    </Link>
                                                 </li>
                                             </OverlayTrigger>
                                         ))
@@ -189,6 +193,7 @@ const SideBar = () => {
                     </ul>
                 </div>
             </div>
+
         </React.Fragment>
     )
 }

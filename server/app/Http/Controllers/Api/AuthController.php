@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\User;
+use App\Setting;
 use Illuminate\Http\JsonResponse;
 class AuthController extends Controller
 {
@@ -45,8 +46,8 @@ class AuthController extends Controller
 	    	], 401);
         }else{
 
-        	$user->otp = rand(38000, 980000);
-        	$user->save();
+        	// $user->otp = rand(38000, 980000);
+        	// $user->save();
 
 
             $details = ['otp' => $user->otp];
@@ -68,8 +69,8 @@ class AuthController extends Controller
 
         if ($user != null) {
             Auth::login($user);
-            Auth::user()->otp = null;
-            Auth::user()->save();
+            // Auth::user()->otp = null;
+            // Auth::user()->save();
             return response()->json([
                 'status'  => 202,
                 'message' => 'Login Successfully...',
@@ -87,17 +88,32 @@ class AuthController extends Controller
     public function logout(Request $request): JsonResponse
     {
         Auth::user()->tokens()->delete();
+        return response()->json([
+           'status' => 200,
+           'message'=> 'Logout Successfully...',
+        ], 200);
+    }
+
+    public function setting(Request $request): JsonResponse
+    {
+        $setting = Setting::find(1);
     	return response()->json([
-    	   'status' => 200,
+           'status' => 200,
+    	   'setting' => $setting,
     	   'message'=> 'Logout Successfully...',
     	], 200);
     }
 
     public function profile()
     {
+        $setting = Setting::find(1);
 		return response()->json([
 		   'status' => 204,
+           'setting' => $setting,
 		   'user' => Auth::user(),
 		], 200);
     }
+
+
+    
 }

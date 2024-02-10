@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Lock, Rss } from 'react-feather'
+import { Image, Lock, Mail, Rss, User } from 'react-feather'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom'
 import { AuthUserAction, ProfileUpdateAction } from '../../redux/actions/AuthAction';
@@ -96,6 +96,12 @@ const AdminProfile = () => {
                                                             <Lock className="d-block d-md-none" />
                                                         </Link>
                                                     </li>
+                                                    <li className="nav-item">
+                                                        <Link className="nav-link font-weight-bold" to={'/admin/setting'}>
+                                                            <span className="d-none d-md-block">Setting</span>
+                                                            <Rss className="d-block d-md-none" />
+                                                        </Link>
+                                                    </li>
 
                                                 </ul>
 
@@ -126,24 +132,40 @@ const AdminProfile = () => {
                                                 <div className='col'>
                                                     <div className="form-group">
                                                         <label className="form-label">Name</label>
-                                                        <input type="text" className="form-control" onChange={InpChnage} value={data.name} name='name' required />
+                                                        <div class="input-group input-group-merge">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text"><User className='input-feather-icon-size' /></span>
+                                                            </div>
+                                                            <input placeholder='Name' className="form-control" onChange={InpChnage} value={data.name} autoFocus type="text" name="name" required />
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div className='col'>
                                                     <div className="form-group">
                                                         <label className="form-label">Email</label>
-                                                        <input type="text" className="form-control" onChange={InpChnage} value={data.email} name='email' required />
+                                                        <div class="input-group input-group-merge">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text"><Mail className='input-feather-icon-size' /></span>
+                                                            </div>
+                                                            <input placeholder='Email' className="form-control" onChange={InpChnage} value={data.email} type="text" name="email" required />
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className='row'>
                                                 <div className='col'>
                                                     <div className="form-group">
-                                                        <label>Profile pic</label>
-                                                        <div className="custom-file">
-                                                            <input type="file" className="custom-file-input" id="image" onChange={InpChnage} name='image' />
-                                                            <label className="custom-file-label" htmlFor="image">Choose profile pic</label>
+                                                        <label>Profile Picture</label>
+                                                        <div class="input-group input-group-merge">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text"><Image className='input-feather-icon-size' /></span>
+                                                            </div>
+                                                            <div className="custom-file">
+                                                                <input type="file" className="custom-file-input" id="image" onChange={InpChnage} name='image' />
+                                                                <label className="custom-file-label" htmlFor="image">Choose profile Picture</label>
+                                                            </div>
                                                         </div>
+
                                                     </div>
                                                 </div>
 

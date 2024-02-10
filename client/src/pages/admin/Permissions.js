@@ -21,6 +21,8 @@ export const AdminInitialPermissions = {
     CreateFeedBack: false, ReadFeedBack: false, UpdateFeedBack: false, DeleteFeedBack: false,
     // CustomMenu
     CreateCustomMenu: false, ReadCustomMenu: false, UpdateCustomMenu: false, DeleteCustomMenu: false,
+    // Setting
+    ReadSetting: false, UpdateSetting: false,
 };
 
 export const UncombineAdminPermissions = (combinedPermissions) => {

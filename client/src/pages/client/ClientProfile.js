@@ -14,8 +14,23 @@ const ClientProfile = () => {
     const [image, setImage] = useState();
     const [data, setData] = useState({
         name: user?.name,
+        company_name: user?.company_name,
         email: user?.email,
+        phone: user?.phone,
+        address_1: user?.address_1,
+        address_2: user?.address_2,
     })
+
+    useEffect(() => {
+        setData({
+            name: user?.name,
+            company_name: user?.company_name,
+            email: user?.email,
+            phone: user?.phone,
+            address_1: user?.address_1,
+            address_2: user?.address_2,
+        })
+    }, [user]);
 
     const InpChnage = (event) => {
         if (event.target.name === "image") {
@@ -29,7 +44,10 @@ const ClientProfile = () => {
         event.preventDefault();
         const formData = new FormData();
         formData.append("name", data.name);
-        formData.append("email", data.email);
+        formData.append("company_name", data.company_name);
+        formData.append("phone", data.phone);
+        formData.append("address_1", data.address_1);
+        formData.append("address_2", data.address_2);
         formData.append("image", image);
         await dispatch(ProfileUpdateAction(formData))
 
@@ -132,14 +150,41 @@ const ClientProfile = () => {
                                                 <div className='col'>
                                                     <div className="form-group">
                                                         <label className="form-label">Email</label>
-                                                        <input type="text" className="form-control" onChange={InpChnage} value={data.email} name='email' required />
+                                                        <input type="text" className="form-control" readOnly value={data.email} />
+                                                    </div>
+                                                </div>
+                                                <div className='col'>
+                                                    <div className="form-group">
+                                                        <label className="form-label">Company Name</label>
+                                                        <input type="text" className="form-control" onChange={InpChnage} value={data.company_name} name='company_name' required />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className='row'>
+
+                                                <div className='col'>
+                                                    <div className="form-group">
+                                                        <label className="form-label">Phone</label>
+                                                        <input type="text" className="form-control" onChange={InpChnage} value={data.phone} name='phone' required />
+                                                    </div>
+                                                </div>
+                                                <div className='col'>
+                                                    <div className="form-group">
+                                                        <label className="form-label">Address 1</label>
+                                                        <input type="text" className="form-control" onChange={InpChnage} value={data.address_1} name='address_1' required />
+                                                    </div>
+                                                </div>
+                                                <div className='col'>
+                                                    <div className="form-group">
+                                                        <label className="form-label">Address 2</label>
+                                                        <input type="text" className="form-control" onChange={InpChnage} value={data.address_2} name='address_2' />
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className='row'>
                                                 <div className='col'>
                                                     <div className="form-group">
-                                                        <label>Profile pic</label>
+                                                        <label>Profile Picture</label>
                                                         <div className="custom-file">
                                                             <input type="file" className="custom-file-input" id="image" onChange={InpChnage} name='image' />
                                                             <label className="custom-file-label" htmlFor="image">Choose profile pic</label>

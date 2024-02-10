@@ -7,6 +7,7 @@ Route::group(['namespace' => 'Api', 'prefix' => 'auth'], function (){
 	Route::post('register', 'AuthController@register');
 	
 	Route::post('login', 'AuthController@login');
+	Route::get('setting', 'AuthController@setting');
 	Route::post('verify-otp', 'AuthController@verify_otp');
 	Route::post('/password/forgot', 'PasswordResetController@forgot');
 	Route::post('/password/reset/{reset_token}', 'PasswordResetController@reset');
@@ -23,6 +24,7 @@ Route::group(['namespace' => 'Api\Admin', 'prefix' => 'admin', 'middleware' => [
 	Route::get('/dashboard', 'AdminController@dashboard');
 	Route::get('/profile', 'AdminController@profile');
 	Route::post('/update/profile', 'AdminController@update_profile');
+	Route::post('/update/setting', 'AdminController@update_setting');
 
 	Route::get('/password', 'PasswordController@password');
 	Route::post('/update/password', 'PasswordController@update_password');
@@ -50,6 +52,28 @@ Route::group(['namespace' => 'Api\Admin', 'prefix' => 'admin', 'middleware' => [
 	Route::get('/subscription/delete/{id}', 'SubscriptionController@delete');
 
 
+	// Subscription Cancellation
+	Route::get('/subscription/cancellation', 'SubscriptionCancellationController@index');
+	Route::post('/subscription/cancellation/store', 'SubscriptionCancellationController@store');
+	Route::get('/subscription/cancellation/single/{id}', 'SubscriptionCancellationController@single');
+	Route::post('/subscription/cancellation/update/{id}', 'SubscriptionCancellationController@update');
+	Route::get('/subscription/cancellation/delete/{id}', 'SubscriptionCancellationController@delete');
+
+
+
+	// Invoices
+	Route::get('/invoice', 'InvoiceController@index');
+	Route::post('/invoice/store', 'InvoiceController@store');
+	Route::get('/invoice/single/{id}', 'InvoiceController@single');
+	Route::post('/invoice/update/{id}', 'InvoiceController@update');
+	Route::get('/invoice/delete/{id}', 'InvoiceController@delete');
+
+	// Popup Messages
+	Route::get('/popup/message', 'PopupMessageController@index');
+	Route::post('/popup/message/store', 'PopupMessageController@store');
+	Route::get('/popup/message/single/{id}', 'PopupMessageController@single');
+	Route::post('/popup/message/update/{id}', 'PopupMessageController@update');
+	Route::get('/popup/message/delete/{id}', 'PopupMessageController@delete');
 
 	// Custom Menus
 	Route::get('/menu', 'MenuController@index');
@@ -57,6 +81,29 @@ Route::group(['namespace' => 'Api\Admin', 'prefix' => 'admin', 'middleware' => [
 	Route::get('/menu/single/{id}', 'MenuController@single');
 	Route::post('/menu/update/{id}', 'MenuController@update');
 	Route::get('/menu/delete/{id}', 'MenuController@delete');
+
+
+	// Supports
+	Route::get('/support', 'SupportController@index');
+	Route::post('/support/store', 'SupportController@store');
+	Route::get('/support/single/{id}', 'SupportController@single');
+	Route::post('/support/update/{id}', 'SupportController@update');
+	Route::get('/support/delete/{id}', 'SupportController@delete');
+
+	// Support Chats
+	Route::post('/support/chat/store/{support_id}', 'SupportChatController@store');
+	Route::get('/support/chat/delete/{id}', 'SupportChatController@delete');
+
+	// Feedbacks
+	Route::get('/feedback', 'FeedbackController@index');
+	Route::post('/feedback/store', 'FeedbackController@store');
+	Route::get('/feedback/single/{id}', 'FeedbackController@single');
+	Route::post('/feedback/update/{id}', 'FeedbackController@update');
+	Route::get('/feedback/delete/{id}', 'FeedbackController@delete');
+
+
+	// WpForm
+	Route::get('/lead', 'LeadController@index');
 });
 
 
@@ -82,13 +129,17 @@ Route::group(['namespace' => 'Api\Client', 'prefix' => 'client', 'middleware' =>
 	Route::post('/subscription/store', 'SubscriptionController@store');
 	Route::get('/subscription/single/{id}', 'SubscriptionController@single');
 
-	// Cancellation Request
-	Route::get('/cancellation/request', 'CancellationRequestController@index');
-	Route::post('/cancellation/request/store', 'CancellationRequestController@store');
-	Route::get('/cancellation/request/single/{id}', 'CancellationRequestController@single');
-	Route::post('/cancellation/request/update/{id}', 'CancellationRequestController@update');
-	Route::get('/cancellation/request/delete/{id}', 'CancellationRequestController@delete');
+	// Subscription Cancellation
+	Route::get('/subscription/cancellation', 'SubscriptionCancellationController@index');
+	Route::post('/subscription/cancellation/store', 'SubscriptionCancellationController@store');
+	Route::get('/subscription/cancellation/single/{id}', 'SubscriptionCancellationController@single');
+	Route::post('/subscription/cancellation/update/{id}', 'SubscriptionCancellationController@update');
+	Route::get('/subscription/cancellation/delete/{id}', 'SubscriptionCancellationController@delete');
 
+	// Invoices
+	Route::get('/invoice', 'InvoiceController@index');
+	Route::get('/invoice/single/{id}', 'InvoiceController@single');
+	
 
 	// Supports
 	Route::get('/support', 'SupportController@index');
@@ -96,6 +147,10 @@ Route::group(['namespace' => 'Api\Client', 'prefix' => 'client', 'middleware' =>
 	Route::get('/support/single/{id}', 'SupportController@single');
 	Route::post('/support/update/{id}', 'SupportController@update');
 	Route::get('/support/delete/{id}', 'SupportController@delete');
+
+	// Support Chats
+	Route::post('/support/chat/store/{support_id}', 'SupportChatController@store');
+	Route::get('/support/chat/delete/{id}', 'SupportChatController@delete');
 
 	// Feedbacks
 	Route::get('/feedback', 'FeedbackController@index');

@@ -1,0 +1,8 @@
+.nav-tabs .nav-link:hover,
+.nav-tabs .nav-link:focus {
+    outline: none !important;
+}
+
+.nav-tabs .nav-link {
+    background-color: transparent !important;
+}

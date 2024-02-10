@@ -3,6 +3,10 @@ import {
     SUBSCRIPTION_SUCCESS,
     SUBSCRIPTION_FAIL,
 
+    SUBSCRIPTION_INVOICE_REQUEST,
+    SUBSCRIPTION_INVOICE_SUCCESS,
+    SUBSCRIPTION_INVOICE_FAIL,
+
     SINGLE_SUBSCRIPTION_REQUEST,
     SINGLE_SUBSCRIPTION_SUCCESS,
     SINGLE_SUBSCRIPTION_FAIL,
@@ -30,6 +34,7 @@ import {
 export const SubscriptionReducer = (state = {}, action) => {
     switch (action.type) {
         case SUBSCRIPTION_REQUEST:
+        case SUBSCRIPTION_INVOICE_REQUEST:
         case SINGLE_SUBSCRIPTION_REQUEST:
         case CREATE_SUBSCRIPTION_REQUEST:
         case UPDATE_SUBSCRIPTION_REQUEST:
@@ -44,13 +49,20 @@ export const SubscriptionReducer = (state = {}, action) => {
             return {
                 ...state,
                 loading: false,
-                subscriptions: action.payload.subscriptions,
+                subscriptions: action.payload.subscriptionsWithDetails,
+                plans: action.payload.subscriptionProducts,
             };
         case SINGLE_SUBSCRIPTION_SUCCESS:
             return {
                 ...state,
                 loading: false,
                 subscription: action.payload.subscription,
+            };
+        case SUBSCRIPTION_INVOICE_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                invoices: action.payload,
             };
 
 
@@ -86,6 +98,7 @@ export const SubscriptionReducer = (state = {}, action) => {
         case CREATE_SUBSCRIPTION_FAIL:
         case UPDATE_SUBSCRIPTION_FAIL:
         case DELETE_SUBSCRIPTION_FAIL:
+        case SUBSCRIPTION_INVOICE_FAIL:
             return {
                 ...state,
                 loading: false,

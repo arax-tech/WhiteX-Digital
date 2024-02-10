@@ -33,6 +33,7 @@ class FeedbackController extends Controller
 		$feedback->title = $request->title;
 		$feedback->description = $request->description;
 		$feedback->ratings = $request->ratings;
+		$feedback->category = $request->category;
 		$feedback->save();
 		return response()->json([
 		   'status' => 200,
@@ -47,6 +48,7 @@ class FeedbackController extends Controller
 		$feedback->title = $request->title;
 		$feedback->description = $request->description;
 		$feedback->ratings = $request->ratings;
+		$feedback->category = $request->category;
 		$feedback->save();
 		return response()->json([
 		   'status' => 200,

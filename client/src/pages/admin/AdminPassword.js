@@ -105,6 +105,12 @@ const AdminPassword = () => {
                                                             <Lock className="d-block d-md-none" />
                                                         </Link>
                                                     </li>
+                                                    <li className="nav-item">
+                                                        <Link className="nav-link font-weight-bold" to={'/admin/setting'}>
+                                                            <span className="d-none d-md-block">Setting</span>
+                                                            <Rss className="d-block d-md-none" />
+                                                        </Link>
+                                                    </li>
 
                                                 </ul>
 
@@ -135,7 +141,12 @@ const AdminPassword = () => {
                                                 <div className='col'>
                                                     <div className="form-group">
                                                         <label className="form-label">Current Password</label>
-                                                        <input type="text" className="form-control" onChange={inpChnage} name='current_password' value={password.current_password} required />
+                                                        <div class="input-group input-group-merge">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text"><Lock className='input-feather-icon-size' /></span>
+                                                            </div>
+                                                            <input type="text" placeholder='Current Password' name='current_password' className="form-control" onChange={inpChnage} value={password.current_password}  required />
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -143,13 +154,23 @@ const AdminPassword = () => {
                                                 <div className='col'>
                                                     <div className="form-group">
                                                         <label className="form-label">New Password</label>
-                                                        <input type="text" className="form-control" onChange={inpChnage} name='new_password' value={password.new_password} required />
+                                                        <div class="input-group input-group-merge">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text"><Lock className='input-feather-icon-size' /></span>
+                                                            </div>
+                                                            <input type="text" placeholder='New Password' name='new_password' className="form-control" onChange={inpChnage} value={password.new_password}  required />
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div className='col'>
                                                     <div className="form-group">
                                                         <label className="form-label">Confirm Password</label>
-                                                        <input type="text" className="form-control" onChange={inpChnage} name='confirm_password' value={password.confirm_password} required />
+                                                        <div class="input-group input-group-merge">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text"><Lock className='input-feather-icon-size' /></span>
+                                                            </div>
+                                                            <input type="text" placeholder='Confirm Password' name='confirm_password' className="form-control" onChange={inpChnage} value={password.confirm_password}  required />
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

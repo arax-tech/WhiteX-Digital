@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\CustomMenu;
+use App\User;
 use Auth;
 
 class MenuController extends Controller
@@ -13,6 +14,12 @@ class MenuController extends Controller
     public function index(Request $request)
     {
     	$menus = CustomMenu::get();
+
+    	foreach ($menus as $key => $value)
+    	{
+    		$user = User::where(['id' => $value->user_id])->first();
+    		$menus[$key]->user = $user;
+    	}
 		return response()->json([
 		   'status' => 200,
 		   'menus' => $menus,

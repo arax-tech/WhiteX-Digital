@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Header from './include/Header';
 import SideBar from './include/SideBar';
 import Footer from './include/Footer';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 const ClientLayout = ({ children }) => {
+    
 
     return (
         <React.Fragment>

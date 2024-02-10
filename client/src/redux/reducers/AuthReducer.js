@@ -11,15 +11,18 @@ import {
     AUTH_USER_SUCCESS,
     AUTH_USER_FAIL,
 
+    SETTING_REQUEST,
+    SETTING_SUCCESS,
+    SETTING_FAIL,
 
     FORGOT_PASSWORD_REQUEST,
     FORGOT_PASSWORD_SUCCESS,
     FORGOT_PASSWORD_FAIL,
-    
+
     RESET_PASSWORD_REQUEST,
     RESET_PASSWORD_SUCCESS,
     RESET_PASSWORD_FAIL,
-   
+
     UPDATE_PROFILE_REQUEST,
     UPDATE_PROFILE_SUCCESS,
     UPDATE_PROFILE_FAIL,
@@ -38,7 +41,6 @@ import {
 
 
 export const AuthReducer = (state = { user: {} }, action) => {
-    console.log(action.payload?.status);
     switch (action.type) {
         case LOGIN_REQUEST:
         case VERIFY_REQUEST:
@@ -47,6 +49,7 @@ export const AuthReducer = (state = { user: {} }, action) => {
                 loading: true,
                 isAuthenticated: false
             };
+        case SETTING_REQUEST:
         case AUTH_USER_REQUEST:
             return {
                 ...state,
@@ -68,8 +71,12 @@ export const AuthReducer = (state = { user: {} }, action) => {
                 status: action.payload.status,
                 token: action.payload.token,
                 user: action.payload.user,
-                menus: action.payload.menus,
+                menus: action.payload?.menus,
+                setting: action.payload?.setting,
+                PopupMessages: action.payload?.PopupMessages,
+                notifications: action.payload?.notifications,
             };
+
 
 
         case AUTH_USER_SUCCESS:
@@ -78,7 +85,16 @@ export const AuthReducer = (state = { user: {} }, action) => {
                 loading: false,
                 isAuthenticated: true,
                 user: action.payload.user,
-                menus: action.payload.menus,
+                menus: action.payload?.menus,
+                setting: action.payload?.setting,
+                PopupMessages: action.payload?.PopupMessages,
+                notifications: action.payload?.notifications,
+            };
+        case SETTING_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                setting: action.payload?.setting,
             };
 
         case AUTH_LOGOUT_SUCCESS:
@@ -103,6 +119,7 @@ export const AuthReducer = (state = { user: {} }, action) => {
                 status: action.payload.status,
             };
         case AUTH_LOGOUT_FAIL:
+        case SETTING_FAIL:
             return {
                 loading: false,
             }

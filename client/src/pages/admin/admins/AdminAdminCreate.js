@@ -7,6 +7,7 @@ import LoadingTable from '../../../components/LoadingTable'
 import { toast } from 'react-toastify';
 import { CLEAR_ERRORS, CREATE_ADMINS_RESET } from '../../../redux/constants/Admin/AdminsConstant';
 import { AdminInitialPermissions } from '../Permissions';
+import { Image, Info, Mail, User } from 'react-feather';
 
 
 const AdminAdminCreate = () => {
@@ -120,13 +121,23 @@ const AdminAdminCreate = () => {
                                             <div className='col'>
                                                 <div className="form-group">
                                                     <label className="form-label">Name</label>
-                                                    <input type="text" className="form-control" onChange={InpChnage} value={data.name} name='name' required />
+                                                    <div class="input-group input-group-merge">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text"><User className='input-feather-icon-size' /></span>
+                                                        </div>
+                                                        <input type='text' name='name' placeholder='Name' className="form-control" onChange={InpChnage} value={data.name} required />
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div className='col'>
                                                 <div className="form-group">
                                                     <label className="form-label">Email</label>
-                                                    <input type="text" className="form-control" onChange={InpChnage} value={data.email} name='email' required />
+                                                    <div class="input-group input-group-merge">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text"><Mail className='input-feather-icon-size' /></span>
+                                                        </div>
+                                                        <input type='text' name='email' placeholder='Email' className="form-control" onChange={InpChnage} value={data.email} required />
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -135,16 +146,28 @@ const AdminAdminCreate = () => {
                                             <div className='col'>
                                                 <div className="form-group">
                                                     <label className="form-label">Designation</label>
-                                                    <input type="text" className="form-control" onChange={InpChnage} value={data.designation} name='designation' required />
+                                                    <div class="input-group input-group-merge">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text"><Info className='input-feather-icon-size' /></span>
+                                                        </div>
+                                                        <input type='text' name='designation' placeholder='Designation' className="form-control" onChange={InpChnage} value={data.designation} required />
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div className='col'>
                                                 <div className="form-group">
-                                                    <label>Profile pic</label>
-                                                    <div className="custom-file">
-                                                        <input type="file" className="custom-file-input" id="image" onChange={InpChnage} name='image' />
-                                                        <label className="custom-file-label" htmlFor="image">Choose profile pic</label>
+                                                    <label>Profile Picture</label>
+                                                    <div class="input-group input-group-merge">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text"><Image className='input-feather-icon-size' /></span>
+                                                        </div>
+                                                        <div className="custom-file">
+                                                            <input type="file" className="custom-file-input" id="image" onChange={InpChnage} name='image' />
+                                                            <label className="custom-file-label" htmlFor="image">Choose Profile Picture</label>
+                                                        </div>
                                                     </div>
+
+
                                                 </div>
                                             </div>
 
@@ -432,6 +455,24 @@ const AdminAdminCreate = () => {
                                                                     <label class="custom-control-label" htmlFor="DeleteCustomMenu"></label>
                                                                 </div>
                                                             </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td width="40%" valign="middle">Setting</td>
+                                                            <td></td>
+                                                            <td>
+                                                                <div class="custom-control custom-checkbox">
+                                                                    <input class="custom-control-input" id="ReadSetting" onChange={handleCheckboxChange} checked={permissions.ReadSetting} type="checkbox" name="ReadSetting" />
+                                                                    <label class="custom-control-label" htmlFor="ReadSetting"></label>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="custom-control custom-checkbox">
+                                                                    <input class="custom-control-input" id="UpdateSetting" onChange={handleCheckboxChange} checked={permissions.UpdateSetting} type="checkbox" name="UpdateSetting" />
+                                                                    <label class="custom-control-label" htmlFor="UpdateSetting"></label>
+                                                                </div>
+                                                            </td>
+                                                            <td></td>
                                                         </tr>
 
                                                     </tbody>

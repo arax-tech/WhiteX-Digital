@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 
 const Header = () => {
     const dispatch = useDispatch();
-    const { user } = useSelector((state) => state.auth);
+    const { user, notifications } = useSelector((state) => state.auth);
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'vertical-layout vertical-menu-modern navbar-floating footer-static menu-expanded pace-done'
     );
 
@@ -27,6 +27,11 @@ const Header = () => {
         dispatch(AuthLogoutAction());
         toast.success("Logout Successfully...", { theme: "colored" });
     }
+
+    const SubscriptionRegistrationsFields = ['First Name', 'Last Name'];
+    const DigitalMarketingBundlePlansFields = ['Text* Field (your-name)'];
+    const FreeMarketingAnalysisFields = ['Full Name*'];
+    const BookFreeStrategyCallsFields = ['Full Name*'];
     return (
         <React.Fragment>
             <nav className="header-navbar navbar navbar-expand-lg align-items-center floating-nav navbar-light navbar-shadow">
@@ -57,73 +62,159 @@ const Header = () => {
                         <li className="nav-item dropdown dropdown-notification mr-25">
                             <Link className="nav-link" to="#" data-toggle="dropdown">
                                 <Bell className='ficon' />
-                                <span className="badge badge-pill badge-danger badge-up">5</span>
+                                <span className="badge badge-pill badge-danger badge-up">{notifications?.length}</span>
                             </Link>
                             <ul className="dropdown-menu dropdown-menu-media dropdown-menu-right">
                                 <li className="dropdown-menu-header">
                                     <div className="dropdown-header d-flex">
                                         <h4 className="notification-title mb-0 mr-auto">Notifications</h4>
-                                        <div className="badge badge-pill badge-light-primary">6 New</div>
+                                        <div className="badge badge-pill badge-light-primary">{notifications?.length} New</div>
                                     </div>
                                 </li>
-                                <li className="scrollable-container media-list"><Link className="d-flex" to="#">
-                                    <div className="media d-flex align-items-start">
-                                        <div className="media-left">
-                                            <div className="avatar"><img src="/app-assets/images/portrait/small/avatar-s-15.jpg" alt="avatar" width="32" height="32" /></div>
-                                        </div>
-                                        <div className="media-body">
-                                            <p className="media-heading"><span className="font-weight-bolder">Congratulation Sam 🎉</span>winner!</p><small className="notification-text"> Won the monthly best seller badge.</small>
-                                        </div>
-                                    </div>
-                                </Link><Link className="d-flex" to="#">
-                                        <div className="media d-flex align-items-start">
-                                            <div className="media-left">
-                                                <div className="avatar"><img src="/app-assets/images/portrait/small/avatar-s-3.jpg" alt="avatar" width="32" height="32" /></div>
-                                            </div>
-                                            <div className="media-body">
-                                                <p className="media-heading"><span className="font-weight-bolder">New message</span>&nbsp;received</p><small className="notification-text"> You have 10 unread messages</small>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                    <Link className="d-flex" to="#">
-                                        <div className="media d-flex align-items-start">
-                                            <div className="media-left">
-                                                <div className="avatar bg-light-danger">
-                                                    <div className="avatar-content">MD</div>
-                                                </div>
-                                            </div>
-                                            <div className="media-body">
-                                                <p className="media-heading"><span className="font-weight-bolder">Revised Order 👋</span>&nbsp;checkout</p><small className="notification-text"> MD Inc. order updated</small>
-                                            </div>
-                                        </div>
-                                    </Link>
+                                {
+                                    notifications?.map((notification, index) => (
+                                        <li key={index} className="scrollable-container media-list">
+                                            <Link className="d-flex" to="#">
+                                                {
+                                                    notification?.form_id === 2908 && (
+                                                        notification.fields && JSON.parse(notification.fields) && (
+                                                            <>
+                                                                <div className="media d-flex align-items-start">
+                                                                    <div className="media-left">
+                                                                        <div className="avatar bg-light-success">
+                                                                            <div className="avatar-content"><Check className="avatar-icon" /></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="media-body">
+                                                                        <p className="media-heading">
+                                                                            {
+                                                                                SubscriptionRegistrationsFields.map((fieldName, fieldIndex) => {
+                                                                                    const field = Object.values(JSON.parse(notification.fields)).find(f => f.name === fieldName);
+                                                                                    return field ? (
+                                                                                        <React.Fragment key={fieldIndex}>
+                                                                                            <span className="font-weight-bolder">{field.value}&nbsp;</span>
+                                                                                        </React.Fragment>
+                                                                                    ) : null;
+                                                                                })
+                                                                            }
+                                                                        </p>
+                                                                        <small className="notification-text"> Subscription Registrations Leads.</small>
 
-                                    <Link className="d-flex" to="#">
-                                        <div className="media d-flex align-items-start">
-                                            <div className="media-left">
-                                                <div className="avatar bg-light-success">
-                                                    <div className="avatar-content"><Check className="avatar-icon" /></div>
-                                                </div>
-                                            </div>
-                                            <div className="media-body">
-                                                <p className="media-heading"><span className="font-weight-bolder">Sales report</span>&nbsp;generated</p><small className="notification-text"> Last month sales report generated</small>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                    <Link className="d-flex" to="#">
-                                        <div className="media d-flex align-items-start">
-                                            <div className="media-left">
-                                                <div className="avatar bg-light-warning">
-                                                    <div className="avatar-content"><AlertTriangle className="avatar-icon" /></div>
-                                                </div>
-                                            </div>
-                                            <div className="media-body">
-                                                <p className="media-heading"><span className="font-weight-bolder">High memory</span>&nbsp;usage</p><small className="notification-text"> BLR Server using high memory</small>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                </li>
-                                <li className="dropdown-menu-footer"><Link className="btn btn-primary btn-block" to="#">Read all notifications</Link></li>
+                                                                    </div>
+                                                                </div>
+                                                            </>
+                                                        )
+                                                    )
+                                                }
+                                                {
+                                                    notification?.form_id === 2897 && (
+                                                        notification.fields && JSON.parse(notification.fields) && (
+                                                            <>
+                                                                <div className="media d-flex align-items-start">
+                                                                    <div className="media-left">
+                                                                        <div className="avatar bg-light-info">
+                                                                            <div className="avatar-content"><Check className="avatar-icon" /></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="media-body">
+                                                                        <p className="media-heading">
+                                                                            {
+                                                                                DigitalMarketingBundlePlansFields.map((fieldName, fieldIndex) => {
+                                                                                    const field = Object.values(JSON.parse(notification.fields)).find(f => f.name === fieldName);
+                                                                                    return field ? (
+                                                                                        <React.Fragment key={fieldIndex}>
+                                                                                            <span className="font-weight-bolder">{field.value}&nbsp;</span>
+                                                                                        </React.Fragment>
+                                                                                    ) : null;
+                                                                                })
+                                                                            }
+                                                                        </p>
+                                                                        <small className="notification-text"> Digital Marketing Bundle Plans Leads.</small>
+
+                                                                    </div>
+                                                                </div>
+                                                            </>
+                                                        )
+                                                    )
+                                                }
+                                                {
+                                                    notification?.form_id === 2895 && (
+                                                        notification.fields && JSON.parse(notification.fields) && (
+                                                            <>
+                                                                <div className="media d-flex align-items-start">
+                                                                    <div className="media-left">
+                                                                        <div className="avatar bg-light-primary">
+                                                                            <div className="avatar-content"><Check className="avatar-icon" /></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="media-body">
+                                                                        <p className="media-heading">
+                                                                            {
+                                                                                FreeMarketingAnalysisFields.map((fieldName, fieldIndex) => {
+                                                                                    const field = Object.values(JSON.parse(notification.fields)).find(f => f.name === fieldName);
+                                                                                    return field ? (
+                                                                                        <React.Fragment key={fieldIndex}>
+                                                                                            <span className="font-weight-bolder">{field.value}&nbsp;</span>
+                                                                                        </React.Fragment>
+                                                                                    ) : null;
+                                                                                })
+                                                                            }
+                                                                        </p>
+                                                                        <small className="notification-text"> Free Marketing Analysis Leads.</small>
+
+                                                                    </div>
+                                                                </div>
+                                                            </>
+                                                        )
+                                                    )
+                                                }
+                                                {
+                                                    notification?.form_id === 2893 && (
+                                                        notification.fields && JSON.parse(notification.fields) && (
+                                                            <>
+                                                                <div className="media d-flex align-items-start">
+                                                                    <div className="media-left">
+                                                                        <div className="avatar bg-light-dark">
+                                                                            <div className="avatar-content"><Check className="avatar-icon" /></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="media-body">
+                                                                        <p className="media-heading">
+                                                                            {
+                                                                                BookFreeStrategyCallsFields.map((fieldName, fieldIndex) => {
+                                                                                    const field = Object.values(JSON.parse(notification.fields)).find(f => f.name === fieldName);
+                                                                                    return field ? (
+                                                                                        <React.Fragment key={fieldIndex}>
+                                                                                            <span className="font-weight-bolder">{field.value}&nbsp;</span>
+                                                                                        </React.Fragment>
+                                                                                    ) : null;
+                                                                                })
+                                                                            }
+                                                                        </p>
+                                                                        <small className="notification-text"> Book Free Strategy Calls Leads.</small>
+
+                                                                    </div>
+                                                                </div>
+                                                            </>
+                                                        )
+                                                    )
+                                                }
+                                                {/* <div className="media d-flex align-items-start">
+                                                    <div className="media-left">
+                                                        <div className="avatar bg-light-success">
+                                                            <div className="avatar-content"><Check className="avatar-icon" /></div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="media-body">
+                                                        <p className="media-heading"><span className="font-weight-bolder">High memory</span>&nbsp;usage</p><small className="notification-text"> BLR Server using high memory</small>
+                                                    </div>
+                                                </div> */}
+                                            </Link>
+                                        </li>
+                                    ))
+                                }
+
+                                <li className="dropdown-menu-footer"><Link className="btn btn-primary btn-block" to="/admin/leads">Read all notifications</Link></li>
                             </ul>
                         </li>
                         <li className="nav-item dropdown dropdown-user">

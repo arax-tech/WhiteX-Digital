@@ -51,7 +51,7 @@ class PasswordResetController extends Controller
         if(!$user){
         	return response()->json([
 	    	   'status' => 422,
-	    	   'message'=> 'Invalid Reset Token...',
+	    	   'message'=> 'Invalid Token...',
 	    	], 422);
         }else{
 
@@ -61,7 +61,7 @@ class PasswordResetController extends Controller
 
         	return response()->json([
 	    	   'status' => 200,
-	    	   'message'=> 'Password Update Successfully...',
+	    	   'message'=> 'Password Successfully...',
 	    	], 200);
         }
 

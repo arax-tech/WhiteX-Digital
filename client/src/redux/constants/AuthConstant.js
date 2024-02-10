@@ -3,6 +3,11 @@ export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const LOGIN_FAIL = "LOGIN_FAIL";
 export const LOGIN_RESET = "LOGIN_RESET";
 
+export const SETTING_REQUEST = "SETTING_REQUEST";
+export const SETTING_SUCCESS = "SETTING_SUCCESS";
+export const SETTING_FAIL = "SETTING_FAIL";
+export const SETTING_RESET = "SETTING_RESET";
+
 export const VERIFY_REQUEST = "VERIFY_REQUEST";
 export const VERIFY_SUCCESS = "VERIFY_SUCCESS";
 export const VERIFY_FAIL = "VERIFY_FAIL";

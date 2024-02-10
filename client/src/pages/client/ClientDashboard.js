@@ -1,14 +1,35 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import MetaData from '../../components/MetaData'
-import { Gift, HelpCircle, Star, Users } from 'react-feather';
-import { useSelector } from 'react-redux';
+import { AlertTriangle, HelpCircle, Star, Users } from 'react-feather';
+import { useDispatch, useSelector } from 'react-redux';
 import { UncombineClientPermissions } from './Permissions';
-
+import { GetSubscriptionCancellationAction } from '../../redux/actions/Client/SubscriptionCancellationAction';
+import { GetFeedbacksAction } from '../../redux/actions/Client/FeedbackAction';
+import { GetSupportTicketsAction } from '../../redux/actions/Client/SupportAction';
+import { GetTeamAction } from '../../redux/actions/Client/TeamAction';
 
 const ClientDashboard = () => {
-    const { user } = useSelector((state) => state.auth);
+    const dispatch = useDispatch()
+
+    const { user, PopupMessages } = useSelector((state) => state.auth);
     const allPermissions = UncombineClientPermissions(user.permissions);
+
+
+
+    const { cancellations } = useSelector((state) => state.clientSubscriptionCancellations);
+    const { feedbacks } = useSelector((state) => state.feedback);
+    const { supports } = useSelector((state) => state.supports);
+    const { teams } = useSelector((state) => state.teams);
+
+
+    useEffect(() => {
+        dispatch(GetTeamAction());
+        dispatch(GetSubscriptionCancellationAction());
+        dispatch(GetFeedbacksAction());
+        dispatch(GetSupportTicketsAction());
+    }, [dispatch]);
+
     return (
         <div className="content-wrapper">
             <MetaData title="Client - Dashboard" />
@@ -16,17 +37,26 @@ const ClientDashboard = () => {
             </div>
             <div className="content-body">
                 <section id="statistics-card">
+                    {
+                        PopupMessages && PopupMessages?.map((message, index) => (
+                            <div key={index} class="alert alert-warning" role="alert">
+                                <h4 class="alert-heading p-1">Warning !</h4>
+                                <p className='p-1'>{message?.content}</p>
+                            </div>
+                        ))
 
 
+                    }
                     <div className="row">
-                      
+
+
                         {
                             allPermissions.ReadTeam && (
                                 <div className="col-lg-3 col-sm-6 col-12">
-                                    <Link to='/admin/client' className="card">
+                                    <Link to='/client/team' className="card">
                                         <div className="card-header">
                                             <div>
-                                                <h2 className="font-weight-bolder mb-0">10</h2>
+                                                <h2 className="font-weight-bolder mb-0">{teams?.length}</h2>
                                                 <p className="card-text">Teams</p>
                                             </div>
                                             <div className="avatar bg-light-primary p-50 m-0">
@@ -42,15 +72,15 @@ const ClientDashboard = () => {
                         {
                             allPermissions.ReadSubscription && (
                                 <div className="col-lg-3 col-sm-6 col-12">
-                                    <Link to='/admin/subscription' className="card">
+                                    <Link to='/client/subscription/cancellation' className="card">
                                         <div className="card-header">
                                             <div>
-                                                <h2 className="font-weight-bolder mb-0">10</h2>
-                                                <p className="card-text">Subscription</p>
+                                                <h2 className="font-weight-bolder mb-0">{cancellations?.length}</h2>
+                                                <p className="card-text">Cancellation Req...</p>
                                             </div>
                                             <div className="avatar bg-light-primary p-50 m-0">
                                                 <div className="avatar-content">
-                                                    <Gift className="font-medium-5" />
+                                                    <AlertTriangle className="font-medium-5" />
                                                 </div>
                                             </div>
                                         </div>
@@ -61,10 +91,10 @@ const ClientDashboard = () => {
                         {
                             allPermissions.ReadSupportTicket && (
                                 <div className="col-lg-3 col-sm-6 col-12">
-                                    <Link to='/admin/support/ticket' className="card">
+                                    <Link to='/client/support/ticket' className="card">
                                         <div className="card-header">
                                             <div>
-                                                <h2 className="font-weight-bolder mb-0">10</h2>
+                                                <h2 className="font-weight-bolder mb-0">{supports?.length}</h2>
                                                 <p className="card-text">Support Ticket</p>
                                             </div>
                                             <div className="avatar bg-light-primary p-50 m-0">
@@ -80,10 +110,10 @@ const ClientDashboard = () => {
                         {
                             allPermissions.ReadFeedBack && (
                                 <div className="col-lg-3 col-sm-6 col-12">
-                                    <Link to='/admin/feedback' className="card">
+                                    <Link to='/client/feedback' className="card">
                                         <div className="card-header">
                                             <div>
-                                                <h2 className="font-weight-bolder mb-0">10</h2>
+                                                <h2 className="font-weight-bolder mb-0">{feedbacks?.length}</h2>
                                                 <p className="card-text">Feedback</p>
                                             </div>
                                             <div className="avatar bg-light-primary p-50 m-0">

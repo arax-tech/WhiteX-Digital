@@ -3,7 +3,7 @@ import {
     LOGIN_REQUEST,
     LOGIN_SUCCESS,
     LOGIN_FAIL,
-    
+
     VERIFY_REQUEST,
     VERIFY_SUCCESS,
     VERIFY_FAIL,
@@ -11,6 +11,10 @@ import {
     FORGOT_PASSWORD_REQUEST,
     FORGOT_PASSWORD_SUCCESS,
     FORGOT_PASSWORD_FAIL,
+
+    SETTING_REQUEST,
+    SETTING_SUCCESS,
+    SETTING_FAIL,
 
     RESET_PASSWORD_REQUEST,
     RESET_PASSWORD_SUCCESS,
@@ -128,6 +132,31 @@ export const ResetPasswordAction = (reset_token, password) => async (dispatch) =
     }
 };
 
+export const SettingAction = () => async (dispatch) => {
+    try {
+        dispatch({ type: SETTING_REQUEST });
+
+        const { data } = await axios.get(`${BaseURL}/api/auth/setting`, {
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+
+        dispatch({
+            type: SETTING_SUCCESS,
+            payload: data
+        })
+    } catch (error) {
+
+        dispatch({
+            type: SETTING_FAIL,
+            payload: error.response.data
+        })
+
+    }
+}
+
+
 export const AuthUserAction = () => async (dispatch) => {
     try {
         // console.log('here');
@@ -143,13 +172,12 @@ export const AuthUserAction = () => async (dispatch) => {
             }
         });
 
-        // const { data } = await axios.get(`${BaseURL}/api/${role}/profile`)
         dispatch({
             type: AUTH_USER_SUCCESS,
             payload: data
         })
     } catch (error) {
-        
+
         dispatch({
             type: AUTH_USER_FAIL,
             payload: error.response.data
@@ -184,6 +212,7 @@ export const ProfileUpdateAction = (formData) => async (dispatch) => {
 
     }
 }
+
 
 
 export const PasswordUpdateAction = (current_password, new_password) => async (dispatch) => {

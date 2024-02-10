@@ -12,6 +12,10 @@ import {
     UPDATE_SUBSCRIPTION_SUCCESS,
     UPDATE_SUBSCRIPTION_FAIL,
 
+    SUBSCRIPTION_INVOICE_REQUEST,
+    SUBSCRIPTION_INVOICE_SUCCESS,
+    SUBSCRIPTION_INVOICE_FAIL,
+
     DELETE_SUBSCRIPTION_REQUEST,
     DELETE_SUBSCRIPTION_SUCCESS,
     DELETE_SUBSCRIPTION_FAIL,
@@ -23,16 +27,66 @@ import { BaseURL } from '../../constants/BaseURL';
 export const GetSubscriptionAction = () => async (dispatch) => {
     try {
         dispatch({ type: SUBSCRIPTION_REQUEST });
-        const token = localStorage.getItem('token');
-        const { data } = await axios.get(`${BaseURL}/api/admin/subscription`, {
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            }
+
+
+       // Get All Subscriptions
+        const response = await axios.get('https://whitexdigital.com/wp-json/wc/v3/subscriptions', {
+            params: {
+                consumer_key: process.env.REACT_APP_WC_CONSUMER_KEY,
+                consumer_secret: process.env.REACT_APP_WC_CONSUMER_SECRET,
+            },
         });
+
+        const subscriptions = response.data;
+
+
+        // Get all subscription with customer and with subscription orders
+        const subscriptionsWithDetails = await Promise.all(
+            subscriptions.map(async (subscription) => {
+                const GetUserDetails = await axios.get(`https://whitexdigital.com/wp-json/wc/v3/customers/${subscription.customer_id}`, {
+                    params: {
+                        consumer_key: process.env.REACT_APP_WC_CONSUMER_KEY,
+                        consumer_secret: process.env.REACT_APP_WC_CONSUMER_SECRET,
+                    },
+                });
+
+                const user = GetUserDetails.data;
+
+                const GetSubscriptionOrders = await axios.get(`https://whitexdigital.com/wp-json/wc/v3/orders`, {
+                    params: {
+                        consumer_key: process.env.REACT_APP_WC_CONSUMER_KEY,
+                        consumer_secret: process.env.REACT_APP_WC_CONSUMER_SECRET,
+                        subscription: subscription.id,
+                    },
+                });
+
+                const orders = GetSubscriptionOrders.data;
+
+                return { ...subscription, user, orders };
+            })
+        );
+
+        // Get All Subscriptions Products
+        const SubscriptionProducts = await axios.get('https://whitexdigital.com/wp-json/wc/v3/products', {
+            params: {
+                consumer_key: process.env.REACT_APP_WC_CONSUMER_KEY,
+                consumer_secret: process.env.REACT_APP_WC_CONSUMER_SECRET,
+                type: 'subscription',
+            },
+        });
+
+        const subscriptionProducts = SubscriptionProducts.data;
+
+        const finalResponse = { subscriptionsWithDetails, subscriptionProducts };
+ 
+        
+
+        
+        console.log(finalResponse)
+
         dispatch({
             type: SUBSCRIPTION_SUCCESS,
-            payload: data
+            payload: finalResponse
         })
     }
     catch (error) {
@@ -42,6 +96,59 @@ export const GetSubscriptionAction = () => async (dispatch) => {
         })
     }
 };
+
+export const GetSubscriptionInvoicesAction = (id) => async (dispatch) => {
+    try {
+        dispatch({ type: SUBSCRIPTION_INVOICE_REQUEST });
+        // Step 1: Retrieve Subscriptions
+        const subscriptionsResponse = await axios.get('https://whitexdigital.com/wp-json/wc/v3/subscriptions', {
+            params: {
+                consumer_key: process.env.REACT_APP_WC_CONSUMER_KEY,
+                consumer_secret: process.env.REACT_APP_WC_CONSUMER_SECRET,
+                per_page: 100, // Adjust per_page as needed
+            },
+        });
+        const subscriptions = subscriptionsResponse.data;
+
+
+
+        // Step 2: Retrieve Orders (Invoices)
+        let invoices = [];
+        for (const subscription of subscriptions) {
+            // Fetch orders associated with the subscription
+            const subscriptionOrdersResponse = await axios.get('https://whitexdigital.com/wp-json/wc/v3/orders', {
+                params: {
+                    consumer_key: process.env.REACT_APP_WC_CONSUMER_KEY,
+                    consumer_secret: process.env.REACT_APP_WC_CONSUMER_SECRET,
+                    subscription: subscription.id,
+                },
+            });
+            const subscriptionOrders = subscriptionOrdersResponse.data;
+
+            // Filter out invoice orders (e.g., completed orders)
+            const invoiceOrders = subscriptionOrders.filter(order => order.status === 'completed'); // Adjust status as needed
+
+            // Merge invoice orders into the invoices array
+            invoices = [...invoices, ...invoiceOrders];
+        }
+
+ 
+        
+
+        console.log(invoices);
+        dispatch({
+            type: SUBSCRIPTION_INVOICE_SUCCESS,
+            payload: invoices
+        })
+    }
+    catch (error) {
+        dispatch({
+            type: SUBSCRIPTION_INVOICE_FAIL,
+            payload: error.response.data.message
+        })
+    }
+};
+
 export const GetSingleSubscriptionAction = (id) => async (dispatch) => {
     try {
         dispatch({ type: SINGLE_SUBSCRIPTION_REQUEST });
@@ -65,16 +172,39 @@ export const GetSingleSubscriptionAction = (id) => async (dispatch) => {
     }
 };
 
-export const UpdateSubscriptionAction = (id, form) => async (dispatch) => {
+export const UpdateSubscriptionAction = (subscriptionId, planId) => async (dispatch) => {
     try {
         dispatch({ type: UPDATE_SUBSCRIPTION_REQUEST });
-        const token = localStorage.getItem('token');
-        const { data } = await axios.post(`${BaseURL}/api/admin/subscription/update/${id}`, form, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                "Authorization": `Bearer ${token}`
-            }
+
+        // Step 1: Retrieve Subscription Details to get the item ID
+        const subscriptionResponse = await axios.get(`https://whitexdigital.com/wp-json/wc/v3/subscriptions/${subscriptionId}`, {
+            params: {
+                consumer_key: process.env.REACT_APP_WC_CONSUMER_KEY,
+                consumer_secret: process.env.REACT_APP_WC_CONSUMER_SECRET,
+            },
         });
+
+        const subscription = subscriptionResponse.data;
+
+        // Get the item ID from the subscription
+        const itemId = subscription.line_items[0].id;
+
+        // Step 2: Modify Subscription Details with the correct item ID
+        const updatedSubscription = {
+            line_items: [{
+                id: itemId, // Use the correct item ID
+                product_id: planId, // Update with the new product ID
+            }],
+        };
+
+        // Step 3: Update Subscription
+        const { data } = await axios.put(`https://whitexdigital.com/wp-json/wc/v3/subscriptions/${subscriptionId}`, updatedSubscription, {
+            params: {
+                consumer_key: process.env.REACT_APP_WC_CONSUMER_KEY,
+                consumer_secret: process.env.REACT_APP_WC_CONSUMER_SECRET,
+            },
+        });
+
         dispatch({
             type: UPDATE_SUBSCRIPTION_SUCCESS,
             payload: data

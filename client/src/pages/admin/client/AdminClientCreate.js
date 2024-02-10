@@ -4,7 +4,7 @@ import MetaData from '../../../components/MetaData'
 import { useDispatch, useSelector } from 'react-redux';
 import LoadingTable from '../../../components/LoadingTable'
 import { toast } from 'react-toastify';
-import { CreateClientAction } from '../../../redux/actions/Admin/ClientAction';
+import { CreateClientAction, GetCustomersAction } from '../../../redux/actions/Admin/ClientAction';
 import { CLEAR_ERRORS, CREATE_CLIENT_RESET } from '../../../redux/constants/Admin/ClientConstant';
 import { ClientInitialPermissions } from '../../client/Permissions';
 
@@ -13,29 +13,28 @@ const AdminClientCreate = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { loading, isCreated, status, message } = useSelector((state) => state.clients);
+    const { loading, isCreated, status, customers, message } = useSelector((state) => state.clients);
 
 
-    const [image, setImage] = useState();
     const [data, setData] = useState({
-        name: '',
         email: '',
-        designation: '',
     })
 
 
 
 
+    useEffect(() => {
+        dispatch(GetCustomersAction())
+    }, []);
 
-
-
-
+    
     const InpChnage = (event) => {
-        if (event.target.name === "image") {
-            setImage(event.target.files[0]);
-        } else {
-            setData({ ...data, [event.target.name]: event.target.value })
-        }
+        // if (event.target.name === "image") {
+        //     setImage(event.target.files[0]);
+        // } else {
+        //     setData({ ...data, [event.target.name]: event.target.value })
+        // }
+        setData({ ...data, [event.target.name]: event.target.value })
     }
 
 
@@ -79,11 +78,7 @@ const AdminClientCreate = () => {
 
         event.preventDefault();
         const formData = new FormData();
-        formData.append("name", data.name);
         formData.append("email", data.email);
-        formData.append("image", image);
-        formData.append("designation", data.designation);
-        formData.append("role", "Client");
         formData.append("permissions", combinedPermissions);
         await dispatch(CreateClientAction(formData))
     }
@@ -117,21 +112,27 @@ const AdminClientCreate = () => {
                                 loading ? <LoadingTable /> : (
                                     <form method="post" onSubmit={CreateClientFunction} className='p-2'>
                                         <div className='row'>
-                                            <div className='col'>
+                                            {/* <div className='col'>
                                                 <div className="form-group">
                                                     <label className="form-label">Name</label>
                                                     <input type="text" className="form-control" onChange={InpChnage} value={data.name} name='name' required />
                                                 </div>
-                                            </div>
+                                            </div> */}
                                             <div className='col'>
                                                 <div className="form-group">
                                                     <label className="form-label">Email</label>
-                                                    <input type="text" className="form-control" onChange={InpChnage} value={data.email} name='email' required />
+                                                    <select className="form-control" onChange={InpChnage} value={data.email} required name='email'>
+                                                        {
+                                                            customers?.map((customer, index) => (
+                                                                <option key={index} value={`${customer?.id}--|--${customer?.email}`}>{customer?.username}----{customer?.email}</option>
+                                                            ))
+                                                        }
+                                                    </select>
                                                 </div>
                                             </div>
 
                                         </div>
-                                        <div className='row'>
+                                        {/* <div className='row'>
                                             <div className='col'>
                                                 <div className="form-group">
                                                     <label className="form-label">Designation</label>
@@ -148,7 +149,7 @@ const AdminClientCreate = () => {
                                                 </div>
                                             </div>
 
-                                        </div>
+                                        </div> */}
                                         <div className='row'>
                                             <div className='col'>
                                                 <span class="float-right">

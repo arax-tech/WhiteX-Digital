@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\User;
 use Auth;
@@ -33,22 +34,23 @@ class ClientController extends Controller
     {
 	    $check = User::where('email', $request->email)->count();
 	    if ($check < 1) {
-	    	error_reporting(0);
 			$client = new User();
-			$client->name = $request->name;
-			$client->email = $request->email;
-			$client->role = $request->role;
-			$client->designation = $request->designation;
-			$client->password = Hash::make($request->password);
-
-			if ($request->hasFile('image')){
-				if ($client->image) {unlink(public_path('assets/client/profile/').$client->image);}
-			    $file1 = 'client-'.time().'.'.$request->image->extension();
-			    $request->image->storeAs('/client/profile/', $file1, 'my_files');
-			    $client->image = URL::to('').'/assets/client/profile/'.$file1;
-			}
+			$res = explode("--|--", $request->email);
+			$client->customer_id = $res[0];
+			$client->email = $res[1];
+			$client->role = 'Client';
+			$client->password = Hash::make('123');
 			$client->permissions = $request->permissions;
+			$reset_token = sha1(time());
+			$client->reset_token = $reset_token;
 			$client->save();
+
+			$verify_url = "http://localhost:3000/set/password/".$reset_token;
+			$details = ['verify_url' =>  $verify_url];
+			   
+			Mail::to($client->email)->send(new \App\Mail\NewAccount($details));
+
+
 			return response()->json([
 			   'status' => 200,
 			   'message' => 'Client Create Successfuly...',
@@ -66,18 +68,9 @@ class ClientController extends Controller
     {
     	error_reporting(0);
 		$client = User::find($id);
-		$client->name = $request->name;
-		$client->email = $request->email;
-		$client->designation = $request->designation;
-
-		if ($request->hasFile('image')){
-			if ($client->image) {unlink(public_path('assets/client/profile/').$client->image);}
-		    $file1 = 'client-'.time().'.'.$request->image->extension();
-		    $request->image->storeAs('/client/profile/', $file1, 'my_files');
-		    $client->image = URL::to('').'/assets/client/profile/'.$file1;
-		}else{
-		    $client->image = $client->image;
-		}
+		$res = explode("--|--", $request->email);
+		$client->customer_id = $res[0];
+		$client->email = $res[1];
 		$client->permissions = $request->permissions;
 		$client->save();
 		return response()->json([

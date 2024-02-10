@@ -54,7 +54,7 @@ const Header = () => {
 
 
 
-                        <li className="nav-item dropdown dropdown-notification mr-25">
+                        {/* <li className="nav-item dropdown dropdown-notification mr-25">
                             <Link className="nav-link" to="#" data-toggle="dropdown">
                                 <Bell className='ficon' />
                                 <span className="badge badge-pill badge-danger badge-up">5</span>
@@ -125,7 +125,7 @@ const Header = () => {
                                 </li>
                                 <li className="dropdown-menu-footer"><Link className="btn btn-primary btn-block" to="#">Read all notifications</Link></li>
                             </ul>
-                        </li>
+                        </li> */}
                         <li className="nav-item dropdown dropdown-user">
                             <Link className="nav-link dropdown-toggle dropdown-user-link" id="dropdown-user" to="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <div className="user-nav d-sm-flex d-none">

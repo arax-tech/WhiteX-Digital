@@ -3,6 +3,10 @@ import {
     CLIENT_SUCCESS,
     CLIENT_FAIL,
 
+    CUSTOMER_REQUEST,
+    CUSTOMER_SUCCESS,
+    CUSTOMER_FAIL,
+
     SINGLE_CLIENT_REQUEST,
     SINGLE_CLIENT_SUCCESS,
     SINGLE_CLIENT_FAIL,
@@ -30,6 +34,7 @@ import {
 export const ClientReducer = (state = {}, action) => {
     switch (action.type) {
         case CLIENT_REQUEST:
+        case CUSTOMER_REQUEST:
         case SINGLE_CLIENT_REQUEST:
         case CREATE_CLIENT_REQUEST:
         case UPDATE_CLIENT_REQUEST:
@@ -45,6 +50,12 @@ export const ClientReducer = (state = {}, action) => {
                 ...state,
                 loading: false,
                 clients: action.payload.clients,
+            };
+        case CUSTOMER_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                customers: action.payload,
             };
         case SINGLE_CLIENT_SUCCESS:
             return {
@@ -82,6 +93,7 @@ export const ClientReducer = (state = {}, action) => {
 
 
         case CLIENT_FAIL:
+        case CUSTOMER_FAIL:
         case SINGLE_CLIENT_FAIL:
         case CREATE_CLIENT_FAIL:
         case UPDATE_CLIENT_FAIL:

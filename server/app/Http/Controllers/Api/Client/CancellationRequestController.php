@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\Client;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\CancellationRequest;
+use App\SubscriptionCancellation;
 use App\User;
 use Auth;
 class CancellationRequestController extends Controller
@@ -12,7 +12,7 @@ class CancellationRequestController extends Controller
 
     public function index(Request $request)
     {
-    	$cancellationRequests = CancellationRequest::where('client_id', auth::user()->id)->get();
+    	$cancellationRequests = SubscriptionCancellation::where('client_id', auth::user()->id)->get();
 		return response()->json([
 		   'status' => 200,
 		   'cancellationRequests' => $cancellationRequests,
@@ -20,7 +20,7 @@ class CancellationRequestController extends Controller
     }
     public function single(Request $request, $id)
     {
-    	$cancellationRequest = CancellationRequest::find($id);
+    	$cancellationRequest = SubscriptionCancellation::find($id);
 		return response()->json([
 		   'status' => 200,
 		   'cancellationRequest' => $cancellationRequest,
@@ -28,7 +28,7 @@ class CancellationRequestController extends Controller
     }
     public function store(Request $request)
     {
-	    $check = CancellationRequest::where('client_id', auth::user()->id)->count();
+	    $check = SubscriptionCancellation::where('client_id', auth::user()->id)->count();
 	    if ($check < 1) {
 			$cancellation = new CancellationRequest();
 			$cancellation->client_id = auth::user()->id;
@@ -51,7 +51,7 @@ class CancellationRequestController extends Controller
     public function update(Request $request, $id)
     {
    
-		$cancellation = CancellationRequest::find($id);
+		$cancellation = SubscriptionCancellation::find($id);
 		$$cancellation->client_id = auth::user()->id;
 		$cancellation->title = $request->title;
 		$cancellation->description = $request->description;
@@ -64,7 +64,7 @@ class CancellationRequestController extends Controller
 
     public function delete($id)
     {
-    	CancellationRequest::find($id)->delete();
+    	SubscriptionCancellation::find($id)->delete();
 		return response()->json([
 		   'status' => 200,
 		   'message' => 'Cancellation Request Delete Successfuly...',

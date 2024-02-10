@@ -4,7 +4,7 @@ import MetaData from '../../../components/MetaData'
 import { useDispatch, useSelector } from 'react-redux';
 import LoadingTable from '../../../components/LoadingTable'
 import { toast } from 'react-toastify';
-import { GetSingleClientAction, UpdateClientAction } from '../../../redux/actions/Admin/ClientAction';
+import { GetCustomersAction, GetSingleClientAction, UpdateClientAction } from '../../../redux/actions/Admin/ClientAction';
 import { UPDATE_CLIENT_RESET } from '../../../redux/constants/Admin/ClientConstant';
 import { ClientInitialPermissions, UncombineClientPermissions } from '../../client/Permissions';
 
@@ -13,30 +13,30 @@ const AdminClientUpdate = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { loading, client, isUpdated, message } = useSelector((state) => state.clients);
+    const { loading, client, isUpdated, customers,message } = useSelector((state) => state.clients);
     const { id } = useParams();
 
 
-    const [image, setImage] = useState();
+    // const [image, setImage] = useState();
     const [data, setData] = useState({
-        name: client?.name,
         email: client?.email,
-        designation: client?.designation,
     })
 
 
-
+    useEffect(() => {
+        dispatch(GetCustomersAction())
+    }, []);
 
 
 
 
 
     const InpChnage = (event) => {
-        if (event.target.name === "image") {
-            setImage(event.target.files[0]);
-        } else {
-            setData({ ...data, [event.target.name]: event.target.value })
-        }
+        // if (event.target.name === "image") {
+        //     setImage(event.target.files[0]);
+        // } else {
+        // }
+        setData({ ...data, [event.target.name]: event.target.value })
     }
 
 
@@ -78,9 +78,7 @@ const AdminClientUpdate = () => {
     useEffect(() => {
         if (client) {
             setData({
-                name: client.name,
                 email: client.email,
-                designation: client.designation,
             });
             const uncombinedPermissions = UncombineClientPermissions(client.permissions);
             setPermissions(uncombinedPermissions);
@@ -93,10 +91,7 @@ const AdminClientUpdate = () => {
 
         event.preventDefault();
         const formData = new FormData();
-        formData.append("name", data.name);
         formData.append("email", data.email);
-        formData.append("image", image);
-        formData.append("designation", data.designation);
         formData.append("permissions", combinedPermissions);
         await dispatch(UpdateClientAction(id, formData))
     }
@@ -106,7 +101,7 @@ const AdminClientUpdate = () => {
             dispatch({ type: UPDATE_CLIENT_RESET })
             navigate('/admin/client')
         }
-    }, [dispatch,navigate, isUpdated, message, id]);
+    }, [dispatch, navigate, isUpdated, message, id]);
     return (
         <div className="content-wrapper">
             <MetaData title="Admin - Update Client" />
@@ -128,32 +123,14 @@ const AdminClientUpdate = () => {
                                         <div className='row'>
                                             <div className='col'>
                                                 <div className="form-group">
-                                                    <label className="form-label">Name</label>
-                                                    <input type="text" className="form-control" onChange={InpChnage} value={data.name} name='name' required />
-                                                </div>
-                                            </div>
-                                            <div className='col'>
-                                                <div className="form-group">
                                                     <label className="form-label">Email</label>
-                                                    <input type="text" className="form-control" onChange={InpChnage} value={data.email} name='email' required />
-                                                </div>
-                                            </div>
-                                            
-                                        </div>
-                                        <div className='row'>
-                                            <div className='col'>
-                                                <div className="form-group">
-                                                    <label className="form-label">Designation</label>
-                                                    <input type="text" className="form-control" onChange={InpChnage} value={data.designation} name='designation' required />
-                                                </div>
-                                            </div>
-                                            <div className='col'>
-                                                <div className="form-group">
-                                                    <label>Profile pic</label>
-                                                    <div className="custom-file">
-                                                        <input type="file" className="custom-file-input" id="image" onChange={InpChnage} name='image' />
-                                                        <label className="custom-file-label" htmlFor="image">Choose profile pic</label>
-                                                    </div>
+                                                    <select className="form-control" onChange={InpChnage} value={data.email} required name='email'>
+                                                        {
+                                                            customers?.map((customer, index) => (
+                                                                <option key={index} value={`${customer?.id}--|--${customer?.email}`}>{customer?.email}</option>
+                                                            ))
+                                                        }
+                                                    </select>
                                                 </div>
                                             </div>
 
