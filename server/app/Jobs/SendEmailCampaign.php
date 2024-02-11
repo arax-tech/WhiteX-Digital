@@ -38,37 +38,37 @@ class SendEmailCampaign implements ShouldQueue
     public function handle()
     {
         Log::info("IN JOB");
-        $this->sendMail('usamajalal17@gmail.com');
+        $this->sendMail('usama@fundingpips.com');
     }
     public function sendMail($recipient)
     {       
 
-        // Mail::to($recipient)->send(new EmailCampaign('Test Sub','Hello' ));
+        Mail::to($recipient)->send(new EmailCampaign('Test Sub','Hello' ));
 
         // return "Email sent successfully!";
-        $apiKey = 'YOUR_API_KEY';
-        $domain = 'sandbox94d6ba7b67c04637b9142a692d070a45.mailgun.org';
-        $from = 'fundingpip <usama@fundingpips.com>';
-        $to = ['usama@fundingpips.com', 'usamajalal17@gmail.com'];
-        $subject = 'Hello';
-        $text = 'Testing some Mailgun awesomeness!';
+        // $apiKey = '6a8e4b0263a8a00b1b0c8d13ad2b4514-69a6bd85-adb3edb2';
+        // $domain = 'sandboxf2f1b30fd7854c94bf48a02e89edf1e3.mailgun.org';
+        // $from = 'Whitex Digital <usamaja@fundingpips.com>';
+        // $to = ['usama@fundingpips.com'];
+        // $subject = 'Hello';
+        // $text = 'Testing some Mailgun awesomeness!';
 
-        // Create a Guzzle HTTP client
-        $client = new Client();
+        // // Create a Guzzle HTTP client
+        // $client = new Client();
 
-        // Make a POST request to the Mailgun API
-        $response = $client->request('POST', "https://api.mailgun.net/v3/{$domain}/messages", [
-            'auth' => ['api', 'Basic ' . base64_encode("api:{$apiKey}")],
-            'form_params' => [
-                'from' => $from,
-                'to' => $to,
-                'subject' => $subject,
-                'text' => $text,
-            ],
-        ]);
+        // // Make a POST request to the Mailgun API
+        // $response = $client->request('POST', "https://api.mailgun.net/v3/{$domain}/messages", [
+        //     'auth' => ['api', 'Basic ' . base64_encode("api:{$apiKey}")],
+        //     'form_params' => [
+        //         'from' => $from,
+        //         'to' => $to,
+        //         'subject' => $subject,
+        //         'text' => $text,
+        //     ],
+        // ]);
 
-        // Get the response body
-        $body = $response->getBody()->getContents();
+        // // Get the response body
+        // $body = $response->getBody()->getContents();
 
 
 
@@ -91,6 +91,6 @@ class SendEmailCampaign implements ShouldQueue
 
         // Get the response body
         // $body = $response->body();
-        Log::info($body);
+        // Log::info($body);
     }
 }

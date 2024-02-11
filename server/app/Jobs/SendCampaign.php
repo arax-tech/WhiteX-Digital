@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Campaign;
 use App\CampaignRecever;
 use App\Credit;
+use App\Mail\EmailCampaign;
 use App\Settings;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -13,6 +14,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Mail;
 
 class SendCampaign implements ShouldQueue
 {
@@ -141,34 +143,34 @@ class SendCampaign implements ShouldQueue
     }
     public function sendEmail($api, $subject, $body, $recipient)
     {
-        // Mail::to($recipient)->send(new EmailCampaign('Test Sub','Hello' ));
+        Mail::to($recipient)->send(new EmailCampaign($subject,$body ));
 
         // return "Email sent successfully!";
-        $apiKey = $api;
-        $domain = 'sandbox94d6ba7b67c04637b9142a692d070a45.mailgun.org';
-        $from = 'fundingpip <usama@fundingpips.com>';
-        // $to = ['usama@fundingpips.com', 'usamajalal17@gmail.com'];
-        $to = $recipient;
-        $subject = $subject;
-        $text = $body;
+        // $apiKey = $api;
+        // $domain = 'sandbox94d6ba7b67c04637b9142a692d070a45.mailgun.org';
+        // $from = 'fundingpip <usama@fundingpips.com>';
+        // // $to = ['usama@fundingpips.com', 'usamajalal17@gmail.com'];
+        // $to = $recipient;
+        // $subject = $subject;
+        // $text = $body;
 
-        // Create a Guzzle HTTP client
-        $client = new Client();
+        // // Create a Guzzle HTTP client
+        // $client = new Client();
 
-        // Make a POST request to the Mailgun API
-        $response = $client->request('POST', "https://api.mailgun.net/v3/{$domain}/messages", [
-            'auth' => ['api', 'Basic ' . base64_encode("api:{$apiKey}")],
-            'form_params' => [
-                'from' => $from,
-                'to' => $to,
-                'subject' => $subject,
-                'text' => $text,
-            ],
-        ]);
+        // // Make a POST request to the Mailgun API
+        // $response = $client->request('POST', "https://api.mailgun.net/v3/{$domain}/messages", [
+        //     'auth' => ['api', 'Basic ' . base64_encode("api:{$apiKey}")],
+        //     'form_params' => [
+        //         'from' => $from,
+        //         'to' => $to,
+        //         'subject' => $subject,
+        //         'text' => $text,
+        //     ],
+        // ]);
 
-        // Get the response body
-        $body = $response->getBody()->getContents();
-        Log::info($body);
+        // // Get the response body
+        // $body = $response->getBody()->getContents();
+        // Log::info($body);
         return true;
     }
 }
