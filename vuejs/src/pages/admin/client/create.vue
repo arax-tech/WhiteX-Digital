@@ -10,36 +10,30 @@ const router = useRouter();
 const toast = useToast();
 
 definePage({ meta: { action: 'read', subject: 'Admins' } })
-onMounted(() => document.title = "Admin - Create Admin");
-const loading = computed(() => store.state.admins.loading);
+onMounted(() => document.title = "Admin - Create Client");
+onMounted(() => store.dispatch("GetCustomers"));
+const loading = computed(() => store.state.clients.loading);
+const customers = computed(() => store.state.clients.customers);
 
-const name = ref('')
+
 const email = ref('')
-const designation = ref('')
-const password = ref('')
-const image = ref('')
 const refForm = ref()
 const checkedPermissions = ref({});
 
-const AdminPermissions = {
-    Admin: { permissions: ['CreateAdmin', 'ReadAdmin', 'UpdateAdmin', 'DeleteAdmin'] },
-    Client: { permissions: ['CreateClient', 'ReadClient', 'UpdateClient', 'DeleteClient'] },
-    Subscription: { permissions: ['ReadSubscription', 'UpdateSubscription', 'DeleteSubscription'] },
+const ClientPermissions = {
+    Teams: { permissions: ['CreateTeams', 'ReadTeams', 'UpdateTeams', 'DeleteTeams'] },
+    Subscription: { permissions: ['ReadSubscription', 'DeleteSubscription'] },
     CancellationRequests: { permissions: ['ReadCancellationRequests', 'UpdateCancellationRequests', 'DeleteCancellationRequests'] },
     BillingInformation: { permissions: ['ReadBillingInformation'] },
-    InvoiceManagement: { permissions: ['CreateInvoiceManagement', 'ReadInvoiceManagement', 'UpdateInvoiceManagement', 'DeleteInvoiceManagement'] },
-    PopUpMessages: { permissions: ['CreatePopUpMessages', 'ReadPopUpMessages', 'UpdatePopUpMessages', 'DeletePopUpMessages'] },
-    LeadTracking: { permissions: ['ReadLeadTracking', 'DeleteLeadTracking'] },
-    SupportTicket: { permissions: ['ReadSupportTicket', 'UpdateSupportTicket', 'DeleteSupportTicket'] },
-    FeedBack: { permissions: ['ReadFeedBack', 'UpdateFeedBack', 'DeleteFeedBack'] },
-    CustomMenu: { permissions: ['CreateCustomMenu', 'ReadCustomMenu', 'UpdateCustomMenu', 'DeleteCustomMenu'] },
-    Setting: { permissions: ['ReadSetting', 'UpdateSetting'] },
+    InvoiceManagement: { permissions: ['ReadInvoiceManagement'] },
+    SupportTicket: { permissions: ['CreateSupportTicket', 'ReadSupportTicket', 'UpdateSupportTicket', 'DeleteSupportTicket'] },
+    FeedBack: { permissions: ['CreateFeedBack', 'ReadFeedBack', 'UpdateFeedBack', 'DeleteFeedBack'] },
 };
 
 
 const CheckAllPermissions = () => {
-    for (const roleName in AdminPermissions) {
-        checkedPermissions.value[roleName] = checkAll.value ? AdminPermissions[roleName].permissions.slice() : [];
+    for (const roleName in ClientPermissions) {
+        checkedPermissions.value[roleName] = checkAll.value ? ClientPermissions[roleName].permissions.slice() : [];
     }
 };
 
@@ -51,22 +45,16 @@ onMounted(() => {
 
 
 
-const CreateAdminFunction = async () => {
+const CreateClientFunction = async () => {
     const formData = new FormData();
-    formData.append('name', name.value);
     formData.append('email', email.value);
-    formData.append('designation', designation.value);
-    formData.append('password', password.value);
     formData.append('permissions', JSON.stringify(checkedPermissions.value));
-    formData.append("role", "Admin");
-    if (image.value) {
-        formData.append('image', image.value);
-    }
+    formData.append("role", "Client");
     try {
-        const response = await store.dispatch('CreateAdminAction', formData);
+        const response = await store.dispatch('CreateClientAction', formData);
         if (response.status === 200) {
             toast.success(response.message);
-            router.push('/admin/admin');
+            router.push('/admin/client');
         }
     } catch (error) {
         console.error(error);
@@ -75,10 +63,13 @@ const CreateAdminFunction = async () => {
 
 
 const ValidateFunction = () => {
-    refForm?.value?.validate().then(({ valid: isValid }) => {
-        if (isValid)
-            CreateAdminFunction()
-    })
+    console.log(email.value.length);
+    if (email.value.length > 0) {
+        CreateClientFunction();
+    } else {
+        toast.error('Email is required...');
+    }
+
 }
 
 </script>
@@ -89,53 +80,39 @@ const ValidateFunction = () => {
             <VCard>
                 <VCardText style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
                     <div>
-                        <h2>Create Admin</h2>
+                        <h2>Create Client</h2>
                     </div>
                     <div>
-                        <VBtn to="/admin/admin" rounded="pill" color="primary" size="small" class="ml-5">
+                        <VBtn to="/admin/client" rounded="pill" color="primary" size="small" class="ml-5">
                             <VIcon start icon="tabler-arrow-left" />Back
                         </VBtn>
                     </div>
                 </VCardText>
 
                 <VDivider />
-                <!-- <div class="demo-space-x">
-                    <VCheckbox v-model="selected" label="John" value="John" />
 
-                    <VCheckbox v-model="selected" label="Jacob" color="success" value="Jacob" />
-
-                    <VCheckbox v-model="selected" label="Johnson" color="info" value="Johnson" />
-                </div>
-
-                <p class="mt-1">
-                    {{ selected }}
-                </p> -->
                 <VCardText class="pt-0">
                     <VForm class="mt-6" ref="refForm" @submit.prevent="ValidateFunction">
                         <VRow>
-                            <VCol cols="12" md="4">
-                                <AppTextField v-model="name" prepend-inner-icon="tabler-user" placeholder="Name"
-                                    persistent-placeholder label="Name" :rules="[requiredValidator]" />
+
+
+                            <VCol cols="12" md="12">
+                                <!-- <AppTextField v-model="email" prepend-inner-icon="tabler-mail" placeholder="Email" persistent-placeholder label="Email" :rules="[requiredValidator, emailValidator]" /> -->
+                                <!-- <AppSelect :items="customers[email]" v-model="email" prepend-inner-icon="tabler-mail" placeholder="Email" persistent-placeholder label="Email"  :rules="[requiredValidator, emailValidator]" /> -->
+                                <div className="form-group">
+                                    <label className="form-label">Email</label>
+                                    <select class="form-control" v-model="email">
+                                        <option v-for="(customer, index) in customers" :key="index"
+                                            :value="`${customer.id}--|--${customer.email}`">
+                                            {{ customer.username }} ---- {{ customer.email }}
+                                        </option>
+                                    </select>
+                                </div>
+
+
                             </VCol>
 
 
-                            <VCol cols="12" md="4">
-                                <AppTextField v-model="email" prepend-inner-icon="tabler-mail" placeholder="Email"
-                                    persistent-placeholder label="Email" :rules="[requiredValidator, emailValidator]" />
-                            </VCol>
-                            <VCol cols="12" md="4">
-                                <AppTextField v-model="password" prepend-inner-icon="tabler-mail" placeholder="Password"
-                                    persistent-placeholder label="Password" :rules="[requiredValidator]" />
-                            </VCol>
-
-                            <VCol cols="12" md="6">
-                                <AppTextField v-model="designation" prepend-inner-icon="tabler-id" placeholder="Designation"
-                                    persistent-placeholder label="Designation" :rules="[requiredValidator]" />
-                            </VCol>
-                            <VCol cols="12" md="6" class="mt-6">
-                                <VFileInput label="Profile Picture" variant="filled"
-                                    @change="event => image = event.target.files[0]" />
-                            </VCol>
                             <VCol cols="12" md="12" class="mt-6">
                                 <div
                                     style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
@@ -158,7 +135,7 @@ const ValidateFunction = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(role, roleName) in AdminPermissions" :key="roleName">
+                                        <tr v-for="(role, roleName) in ClientPermissions" :key="roleName">
                                             <td>{{ roleName }}</td>
                                             <template v-for="permissionType in ['Create', 'Read', 'Update', 'Delete']">
                                                 <td v-if="role.permissions.includes(permissionType + roleName)">

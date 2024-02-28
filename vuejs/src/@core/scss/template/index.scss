@@ -15,3 +15,77 @@
 
 // Utilities
 @use "utilities";
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.875rem;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #6f6b7d;
+    appearance: none;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #dbdade;
+    border-radius: 0.375rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .form-control {
+        transition: none;
+    }
+}
+
+.form-control[type=file] {
+    overflow: hidden;
+}
+
+.form-control[type=file]:not(:disabled):not([readonly]) {
+    cursor: pointer;
+}
+
+.form-control:focus {
+    color: #6f6b7d;
+    background-color: #fff;
+    border-color: #7367f0;
+    outline: 0;
+    box-shadow: 0 0.125rem 0.25rem rgba(165, 163, 174, 0.3);
+}
+
+.form-control::-webkit-date-and-time-value {
+    min-width: 85px;
+    height: 1.5em;
+    margin: 0;
+}
+
+.form-control::-webkit-datetime-edit {
+    display: block;
+    padding: 0;
+}
+
+.form-control::placeholder {
+    color: #b7b5be;
+    opacity: 1;
+}
+
+.form-control:disabled {
+    background-color: rgba(75, 70, 92, 0.08);
+    opacity: 1;
+}
+
+.form-control::file-selector-button {
+    padding: 0.422rem 0.875rem;
+    margin: -0.422rem -0.875rem;
+    margin-inline-end: 0.875rem;
+    color: #6f6b7d;
+    background-color: #fff;
+    pointer-events: none;
+    border-color: inherit;
+    border-style: solid;
+    border-width: 0;
+    border-inline-end-width: var(--bs-border-width);
+    border-radius: 0;
+    transition: all 0.2s ease-in-out;
+}

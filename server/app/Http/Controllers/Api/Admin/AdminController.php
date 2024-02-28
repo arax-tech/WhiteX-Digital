@@ -38,7 +38,9 @@ class AdminController extends Controller
 		$admin->email = $request->email;
 
 		if ($request->hasFile('image')){
-			if ($admin->image) {unlink(public_path('assets/admin/profile/').$admin->image);}
+			if ($admin->image && file_exists(public_path('assets/admin/profile/').$admin->image)) {
+                unlink(public_path('assets/admin/profile/').$admin->image);
+            }
 		    $file1 = 'admin-'.time().'.'.$request->image->extension();
 		    $request->image->storeAs('/admin/profile/', $file1, 'my_files');
 		    $admin->image = URL::to('').'/assets/admin/profile/'.$file1;

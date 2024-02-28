@@ -1,25 +1,33 @@
 <script setup>
-import { computed } from 'vue';
-import { onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toast-notification';
 import { useStore } from 'vuex';
 
 const store = useStore();
 const router = useRouter();
+const route = useRoute();
 const toast = useToast();
 
 definePage({ meta: { action: 'read', subject: 'Admins' } })
 onMounted(() => document.title = "Admin - Create Admin");
-const loading = computed(() => store.state.admins.loading);
+onMounted(() => store.dispatch("GetSingleAdminAction", route.params.id));
 
-const name = ref('')
-const email = ref('')
-const designation = ref('')
-const password = ref('')
-const image = ref('')
+
+const loading = computed(() => store.state.admins.loading);
+const admin = computed(() => store.state.admins.admin);
+
+
+const name = ref(admin.value?.name)
+const email = ref(admin.value?.email)
+const designation = ref(admin.value?.designation)
+const image = ref(null)
 const refForm = ref()
 const checkedPermissions = ref({});
+
+// const allPermissions = JSON.parse(admin?.value?.permissions);
+
+// console.log(permissionsArray);
 
 const AdminPermissions = {
     Admin: { permissions: ['CreateAdmin', 'ReadAdmin', 'UpdateAdmin', 'DeleteAdmin'] },
@@ -51,25 +59,22 @@ onMounted(() => {
 
 
 
-const CreateAdminFunction = async () => {
+const UpdateAdminFunction = async () => {
     const formData = new FormData();
     formData.append('name', name.value);
     formData.append('email', email.value);
     formData.append('designation', designation.value);
-    formData.append('password', password.value);
-    formData.append('permissions', JSON.stringify(checkedPermissions.value));
-    formData.append("role", "Admin");
+    formData.append('permissions', JSON.stringify(checkedPermissions?.value)); // Convert array to string
     if (image.value) {
         formData.append('image', image.value);
     }
     try {
-        const response = await store.dispatch('CreateAdminAction', formData);
-        if (response.status === 200) {
-            toast.success(response.message);
-            router.push('/admin/admin');
-        }
+        const response = await store.dispatch('UpdateAdminAction', { id: route.params.id, formData });
+        toast.success(response.message);
+        router.push('/admin/admin');
     } catch (error) {
         console.error(error);
+        toast.error(error.message); // Assuming error has a message property
     }
 };
 
@@ -77,7 +82,7 @@ const CreateAdminFunction = async () => {
 const ValidateFunction = () => {
     refForm?.value?.validate().then(({ valid: isValid }) => {
         if (isValid)
-            CreateAdminFunction()
+            UpdateAdminFunction()
     })
 }
 
@@ -89,7 +94,7 @@ const ValidateFunction = () => {
             <VCard>
                 <VCardText style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
                     <div>
-                        <h2>Create Admin</h2>
+                        <h2>Update Admin</h2>
                     </div>
                     <div>
                         <VBtn to="/admin/admin" rounded="pill" color="primary" size="small" class="ml-5">
@@ -113,19 +118,15 @@ const ValidateFunction = () => {
                 <VCardText class="pt-0">
                     <VForm class="mt-6" ref="refForm" @submit.prevent="ValidateFunction">
                         <VRow>
-                            <VCol cols="12" md="4">
+                            <VCol cols="12" md="6">
                                 <AppTextField v-model="name" prepend-inner-icon="tabler-user" placeholder="Name"
                                     persistent-placeholder label="Name" :rules="[requiredValidator]" />
                             </VCol>
 
 
-                            <VCol cols="12" md="4">
+                            <VCol cols="12" md="6">
                                 <AppTextField v-model="email" prepend-inner-icon="tabler-mail" placeholder="Email"
                                     persistent-placeholder label="Email" :rules="[requiredValidator, emailValidator]" />
-                            </VCol>
-                            <VCol cols="12" md="4">
-                                <AppTextField v-model="password" prepend-inner-icon="tabler-mail" placeholder="Password"
-                                    persistent-placeholder label="Password" :rules="[requiredValidator]" />
                             </VCol>
 
                             <VCol cols="12" md="6">
@@ -182,7 +183,7 @@ const ValidateFunction = () => {
                             <!-- <button @click="getCheckedData">Get Checked Data</button> -->
 
                             <VCol cols="12">
-                                <VBtn type="submit" :disabled="loading">{{ loading ? 'Creating...' : 'Create' }}</VBtn>
+                                <VBtn type="submit" :disabled="loading">{{ loading ? 'Updating...' : 'Update' }}</VBtn>
                             </VCol>
                         </VRow>
                     </VForm>

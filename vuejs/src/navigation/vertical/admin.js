@@ -19,8 +19,8 @@ export default [
     title: "Subscriptions",
     icon: { icon: "tabler-file" },
     children: [
-      { title: "Subscription", to: "charts-apex-chart" },
-      { title: "Cancellation Requests", to: "charts-chartjs" },
+      { title: "Subscription", to: "admin-subscription" },
+      { title: "Cancellation Requests", to: "admin-subscription-cancellation-requests" },
     ],
   },
   {
@@ -34,9 +34,14 @@ export default [
     to: 'apps-chat',
   },
   {
+    title: 'SMS',
+    icon: { icon: 'tabler-message-circle' },
+    to: 'admin-campaign-sms',
+  },
+  {
     title: "Billing Information",
     icon: { icon: "tabler-id" },
-    to: "admin-client",
+    to: "admin-billing-information",
   },
   {
     title: "Invoice Management",

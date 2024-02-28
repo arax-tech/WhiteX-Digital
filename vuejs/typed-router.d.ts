@@ -8,34 +8,54 @@
 /// <reference types="unplugin-vue-router/client" />
 
 import type {
-  NavigationGuard,
-  ParamValue,
-  RouteLocationAsPathTypedList,
-  RouteLocationAsRelativeTypedList,
-  RouteLocationAsString,
-  RouteLocationNormalizedLoadedTypedList,
-  RouteLocationNormalizedTypedList,
-  RouteLocationResolvedTypedList,
   // type safe route locations
   RouteLocationTypedList,
+  RouteLocationResolvedTypedList,
+  RouteLocationNormalizedTypedList,
+  RouteLocationNormalizedLoadedTypedList,
+  RouteLocationAsString,
+  RouteLocationAsRelativeTypedList,
+  RouteLocationAsPathTypedList,
+
   // helper types
   // route definitions
   RouteRecordInfo,
-  RouterLinkPropsTyped,
+  ParamValue,
+  ParamValueOneOrMore,
+  ParamValueZeroOrMore,
+  ParamValueZeroOrOne,
+
+  // vue-router extensions
+  _RouterTyped,
   RouterLinkTyped,
+  RouterLinkPropsTyped,
+  NavigationGuard,
   UseLinkFnTyped,
 
   // data fetching
   _DataLoader,
   _DefineLoaderOptions,
-  // vue-router extensions
-  _RouterTyped
 } from 'unplugin-vue-router/types'
 
 declare module 'vue-router/auto/routes' {
   export interface RouteNamedMap {
     '$error': RouteRecordInfo<'$error', '/:error(.*)', { error: ParamValue<true> }, { error: ParamValue<false> }>,
+    'about': RouteRecordInfo<'about', '/about', Record<never, never>, Record<never, never>>,
     'access-control': RouteRecordInfo<'access-control', '/access-control', Record<never, never>, Record<never, never>>,
+    'admin-admin': RouteRecordInfo<'admin-admin', '/admin/admin', Record<never, never>, Record<never, never>>,
+    'admin-admin-create': RouteRecordInfo<'admin-admin-create', '/admin/admin/create', Record<never, never>, Record<never, never>>,
+    'admin-admin-edit-id': RouteRecordInfo<'admin-admin-edit-id', '/admin/admin/edit/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
+    'admin-billing-information': RouteRecordInfo<'admin-billing-information', '/admin/billing/information', Record<never, never>, Record<never, never>>,
+    'admin-campaign-sms': RouteRecordInfo<'admin-campaign-sms', '/admin/campaign/sms', Record<never, never>, Record<never, never>>,
+    'admin-client': RouteRecordInfo<'admin-client', '/admin/client', Record<never, never>, Record<never, never>>,
+    'admin-client-create': RouteRecordInfo<'admin-client-create', '/admin/client/create', Record<never, never>, Record<never, never>>,
+    'admin-dashboard': RouteRecordInfo<'admin-dashboard', '/admin/dashboard', Record<never, never>, Record<never, never>>,
+    'admin-mail': RouteRecordInfo<'admin-mail', '/admin/mail', Record<never, never>, Record<never, never>>,
+    'admin-password': RouteRecordInfo<'admin-password', '/admin/password', Record<never, never>, Record<never, never>>,
+    'admin-profile': RouteRecordInfo<'admin-profile', '/admin/profile', Record<never, never>, Record<never, never>>,
+    'admin-setting': RouteRecordInfo<'admin-setting', '/admin/setting', Record<never, never>, Record<never, never>>,
+    'admin-subscription': RouteRecordInfo<'admin-subscription', '/admin/subscription', Record<never, never>, Record<never, never>>,
+    'admin-subscription-cancellation-requests': RouteRecordInfo<'admin-subscription-cancellation-requests', '/admin/subscription/cancellation/requests', Record<never, never>, Record<never, never>>,
     'apps-academy-course-details': RouteRecordInfo<'apps-academy-course-details', '/apps/academy/course-details', Record<never, never>, Record<never, never>>,
     'apps-academy-dashboard': RouteRecordInfo<'apps-academy-dashboard', '/apps/academy/dashboard', Record<never, never>, Record<never, never>>,
     'apps-academy-my-course': RouteRecordInfo<'apps-academy-my-course', '/apps/academy/my-course', Record<never, never>, Record<never, never>>,
@@ -66,6 +86,7 @@ declare module 'vue-router/auto/routes' {
     'apps-email-label': RouteRecordInfo<'apps-email-label', '/apps/email/:label', { label: ParamValue<true> }, { label: ParamValue<false> }>,
     'charts-apex-chart': RouteRecordInfo<'charts-apex-chart', '/charts/apex-chart', Record<never, never>, Record<never, never>>,
     'charts-chartjs': RouteRecordInfo<'charts-chartjs', '/charts/chartjs', Record<never, never>, Record<never, never>>,
+    'client-dashboard': RouteRecordInfo<'client-dashboard', '/client/dashboard', Record<never, never>, Record<never, never>>,
     'components-alert': RouteRecordInfo<'components-alert', '/components/alert', Record<never, never>, Record<never, never>>,
     'components-avatar': RouteRecordInfo<'components-avatar', '/components/avatar', Record<never, never>, Record<never, never>>,
     'components-badge': RouteRecordInfo<'components-badge', '/components/badge', Record<never, never>, Record<never, never>>,
@@ -142,9 +163,13 @@ declare module 'vue-router/auto/routes' {
     'pages-pricing': RouteRecordInfo<'pages-pricing', '/pages/pricing', Record<never, never>, Record<never, never>>,
     'pages-typography': RouteRecordInfo<'pages-typography', '/pages/typography', Record<never, never>, Record<never, never>>,
     'pages-user-profile-tab': RouteRecordInfo<'pages-user-profile-tab', '/pages/user-profile/:tab', { tab: ParamValue<true> }, { tab: ParamValue<false> }>,
+    'password-forgot': RouteRecordInfo<'password-forgot', '/password/forgot', Record<never, never>, Record<never, never>>,
+    'password-reset-token': RouteRecordInfo<'password-reset-token', '/password/reset/:token', { token: ParamValue<true> }, { token: ParamValue<false> }>,
+    'password-set-token': RouteRecordInfo<'password-set-token', '/password/set/:token', { token: ParamValue<true> }, { token: ParamValue<false> }>,
     'register': RouteRecordInfo<'register', '/register', Record<never, never>, Record<never, never>>,
     'tables-data-table': RouteRecordInfo<'tables-data-table', '/tables/data-table', Record<never, never>, Record<never, never>>,
     'tables-simple-table': RouteRecordInfo<'tables-simple-table', '/tables/simple-table', Record<never, never>, Record<never, never>>,
+    'verify': RouteRecordInfo<'verify', '/verify', Record<never, never>, Record<never, never>>,
     'wizard-examples-checkout': RouteRecordInfo<'wizard-examples-checkout', '/wizard-examples/checkout', Record<never, never>, Record<never, never>>,
     'wizard-examples-create-deal': RouteRecordInfo<'wizard-examples-create-deal', '/wizard-examples/create-deal', Record<never, never>, Record<never, never>>,
     'wizard-examples-property-listing': RouteRecordInfo<'wizard-examples-property-listing', '/wizard-examples/property-listing', Record<never, never>, Record<never, never>>,
@@ -227,8 +252,10 @@ declare module 'vue-router/auto' {
   ): _DataLoader<Awaited<P>, isLazy>
 
   export {
-    _HasDataLoaderMeta as HasDataLoaderMeta, _definePage as definePage, _setupDataFetchingGuard as setupDataFetchingGuard,
-    _stopDataFetchingScope as stopDataFetchingScope
+    _definePage as definePage,
+    _HasDataLoaderMeta as HasDataLoaderMeta,
+    _setupDataFetchingGuard as setupDataFetchingGuard,
+    _stopDataFetchingScope as stopDataFetchingScope,
   } from 'unplugin-vue-router/runtime'
 }
 

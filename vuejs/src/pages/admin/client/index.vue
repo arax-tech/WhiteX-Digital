@@ -1,79 +1,91 @@
 <script setup>
+import { computed } from 'vue';
 import { onMounted } from 'vue';
 import { VDataTable } from 'vuetify/labs/VDataTable';
+import { useRouter } from 'vue-router';
+import { useToast } from 'vue-toast-notification';
+import { useStore } from 'vuex';
+
+import moment from 'moment'
+
+const store = useStore();
+const router = useRouter();
+const toast = useToast();
+
+import Loading from '../../../components/Loading.vue'
+
 definePage({ meta: { action: 'read', subject: 'Admins' } })
-onMounted(() => document.title = "Admin - Admins");
+onMounted(() => document.title = "Admin - Clients");
+onMounted(() => store.dispatch("GetClients"));
+const clients = computed(() => store.state.clients.clients);
+const loading = computed(() => store.state.clients.loading);
+
+
+
+
 
 
 const search = ref('')
-const productList = ref([])
 
 // headers
 const headers = [
     {
-        title: 'Admin',
-        key: 'product.name',
+        title: 'Client',
+        key: 'client.name',
     },
     {
-        title: 'DATE',
-        key: 'date',
+        title: 'Email',
+        key: 'client.email',
     },
     {
-        title: 'PAYMENT',
-        key: 'payment',
-        sortable: false,
+        title: 'Company Name',
+        key: 'client.company_name',
     },
     {
-        title: 'STATUS',
-        key: 'status',
-        sortable: false,
+        title: 'Phone',
+        key: 'client.phone',
+    },
+    {
+        title: 'Register At',
+        key: 'client.created_at',
     },
     {
         title: 'Action',
-        key: 'delete',
+        key: 'client.delete',
         sortable: false,
     },
 ]
 
-const deleteItem = itemId => {
-    const index = productList.value.findIndex(item => item.product.id === itemId)
-
-    productList.value.splice(index, 1)
+const DeleteClientn = async (id) => {
+    if (!confirm(`Are you sure to delete ?`)) {
+        return
+    }
+    try {
+        const response = await store.dispatch('DeleteClientAction', id);
+        if (response.status === 200) {
+            toast.error(response.message);
+            store.dispatch("GetClients");
+        }
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 
 
-const resolveStatusColor = status => {
-    if (status === 'Confirmed')
-        return 'primary'
-    if (status === 'Completed')
-        return 'success'
-    if (status === 'Cancelled')
-        return 'error'
-}
-
-
-
-
-const { data, error } = await useApi('pages/datatable')
-if (error.value) {
-    console.error(error.value)
-} else {
-    if (data.value)
-        productList.value = data.value
-}
 </script>
 
 <template>
     <VRow>
         <!-- 👉 Admins  -->
-        <VCol cols="12">
+        <Loading v-if="loading"/>
+        <VCol v-else cols="12">
             <VCard>
                 <VCardText style="border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity))">
                     <VRow>
                         <VCol cols="8" md="8">
-                            <h2>Admins
-                                <VBtn to="/admin/admin/create" rounded="pill" color="primary" size="small" class="ml-5">
+                            <h2>Clients
+                                <VBtn to="/admin/client/create" rounded="pill" color="primary" size="small" class="ml-5">
                                     <VIcon start icon="tabler-plus" />
                                     Create
                                 </VBtn>
@@ -89,55 +101,51 @@ if (error.value) {
                 </VCardText>
 
                 <!-- 👉 Data Table  -->
-                <VDataTable :headers="headers" :items="productList" :search="search" :items-per-page="5"
-                    class="text-no-wrap">
+                <VDataTable :headers="headers" :items="clients" :search="search" :items-per-page="5"
+                    class="text-no-wrap mb-4">
                     <!-- product -->
-                    <template #item.product.name="{ item }">
+                    <template #item.client.name="{ item }">
+
                         <div class="d-flex align-center">
                             <div>
-                                <VImg :src="item.product.image" height="40" width="40" />
+                                <VImg :src="item.image?.length > 0 ? item.image : '/placeholder.jpg' " height="40" width="40" />
                             </div>
                             <div class="d-flex flex-column ms-3">
-                                <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{
-                                    item.product.name }}</span>
-                                <span class="text-xs">{{ item.product.brand }}</span>
+                                <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{ item.name
+                                                                    }}</span>
+                                <span class="text-xs">{{ item.designation }}</span>
                             </div>
                         </div>
                     </template>
-
-
-
-
-
-
-                    <!-- Payment -->
-                    <template #item.payment="{ item }">
-                        <div class="d-flex flex-column">
-                            <div class="d-flex align-center">
-                                <span class="text-high-emphasis font-weight-medium">${{ item.payment.paidAmount
-                                }}</span>
-                                <span v-if="item.payment.paidAmount !== item.payment.total">/{{ item.payment.total
-                                }}</span>
-                            </div>
-                            <span class="text-xs text-no-wrap">{{ item.payment.receivedPaymentStatus }}</span>
-                        </div>
+                    <template #item.client.email="{ item }">
+                        <span class="text-xs">{{ item.email }}</span>
+                    </template>
+                    <template #item.client.company_name="{ item }">
+                        <span class="text-xs">{{ item.company_name }}</span>
+                    </template>
+                    <template #item.client.phone="{ item }">
+                        <span class="text-xs">{{ item.phone }}</span>
+                    </template>
+                    <template #item.client.created_at="{ item }">
+                        <span class="text-xs">{{ moment(item?.created_at).format('DD MMM yyyy, hh:mm A') }}</span>
                     </template>
 
-                    <!-- Status -->
-                    <template #item.status="{ item }">
-                        <VChip :color="resolveStatusColor(item.payment.status)"
-                            :class="`text-${resolveStatusColor(item.payment.status)}`" size="small"
-                            class="font-weight-medium">
-                            {{ item.payment.status }}
-                        </VChip>
-                    </template>
+
+
+
+
+
+
+
 
                     <!-- Delete -->
-                    <template #item.delete="{ item }">
-                        <IconBtn @click="deleteItem(item.product.id)">
+                    <template #item.client.delete="{ item }">
+                        <IconBtn @click="() => router.push('/admin/admin/edit/' + item.id)">
+                            <VTooltip activator="parent" location="top">Update</VTooltip>
                             <VIcon icon="tabler-edit" />
                         </IconBtn>
-                        <IconBtn @click="deleteItem(item.product.id)">
+                        <IconBtn @click="DeleteClientn(item.id)">
+                            <VTooltip activator="parent" location="top">Delete</VTooltip>
                             <VIcon icon="tabler-trash" />
                         </IconBtn>
                     </template>
@@ -146,3 +154,6 @@ if (error.value) {
         </VCol>
     </VRow>
 </template>
+
+
+

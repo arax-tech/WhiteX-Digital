@@ -9,6 +9,8 @@ import { useLayoutConfigStore } from '@layouts/stores/config'
 import { injectionKeyIsVerticalNavHovered } from '@layouts/symbols'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { VNodeRenderer } from './VNodeRenderer'
+import { computed, onMounted } from 'vue'
+import { useStore } from 'vuex'
 
 const props = defineProps({
   tag: {
@@ -65,7 +67,9 @@ const updateIsVerticalNavScrolled = val => isVerticalNavScrolled.value = val
 const handleNavScroll = evt => {
   isVerticalNavScrolled.value = evt.target.scrollTop > 0
 }
-
+const store = useStore();
+onMounted(() => store.dispatch('GetAuthUser'));
+const setting = computed(() => store.state.auth.setting);
 const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered)
 </script>
 
@@ -82,11 +86,12 @@ const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered)
     <div class="nav-header">
       <slot name="nav-header">
         <RouterLink to="/" class="app-logo app-title-wrapper">
-          <VNodeRenderer :nodes="layoutConfig.app.logo" />
+          <!-- <VNodeRenderer :nodes="layoutConfig.app.logo" /> -->
 
           <Transition name="vertical-nav-app-title">
             <h1 v-show="!hideTitleAndIcon" class="app-logo-title leading-normal">
-              WhteXDigital
+              <img style="width: 130px; height: 50px;" :src="setting?.menu_logo" alt="">
+
               <!-- {{ layoutConfig.app.title }} -->
             </h1>
           </Transition>
