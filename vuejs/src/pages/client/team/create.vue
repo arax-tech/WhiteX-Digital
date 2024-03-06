@@ -1,5 +1,6 @@
 <script setup>
 import Loading from '@/components/Loading.vue';
+import { ClientPermissions } from '@/pages/admin/client/Permission';
 import { computed } from 'vue';
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
@@ -31,15 +32,7 @@ const data = ref({
 
 const checkedPermissions = ref({});
 
-const ClientPermissions = {
-    Teams: { permissions: ['CreateTeams', 'ReadTeams', 'UpdateTeams', 'DeleteTeams'] },
-    Subscription: { permissions: ['ReadSubscription', 'DeleteSubscription'] },
-    CancellationRequests: { permissions: ['ReadCancellationRequests', 'UpdateCancellationRequests', 'DeleteCancellationRequests'] },
-    BillingInformation: { permissions: ['ReadBillingInformation'] },
-    InvoiceManagement: { permissions: ['ReadInvoiceManagement'] },
-    SupportTicket: { permissions: ['CreateSupportTicket', 'ReadSupportTicket', 'UpdateSupportTicket', 'DeleteSupportTicket'] },
-    FeedBack: { permissions: ['CreateFeedBack', 'ReadFeedBack', 'UpdateFeedBack', 'DeleteFeedBack'] },
-};
+
 
 
 const CheckAllPermissions = () => {
@@ -63,10 +56,11 @@ const CreateTeamFunction = async () => {
     formData.append('phone', data.value.phone);
     formData.append('password', data.value.password);
     formData.append('designation', data.value.designation);
+    formData.append('permissions', JSON.stringify(checkedPermissions.value));
     if (data.value.image) {
         formData.append('image', data.value.image);
     }
-    formData.append("role", "Team");
+    formData.append("role", "Client");
     try {
         const response = await store.dispatch('CreateTeamAction', formData);
         if (response.status === 200) {
@@ -85,6 +79,18 @@ const ValidateFunction = () => {
             CreateTeamFunction()
     })
 
+}
+
+
+const OnChangePermission = (roleName, permission) => {
+    if (checkedPermissions.value.hasOwnProperty(roleName)) {
+        const index = checkedPermissions.value[roleName].indexOf(permission);
+        if (index !== -1) {
+            checkedPermissions.value[roleName].splice(index, 1);
+        } else {
+            checkedPermissions.value[roleName].push(permission);
+        }
+    }
 }
 
 </script>
@@ -166,13 +172,13 @@ const ValidateFunction = () => {
                                     </thead>
                                     <tbody>
                                         <tr v-for="(role, roleName) in ClientPermissions" :key="roleName">
-                                            <td>{{ roleName }}</td>
+                                            <td>{{ roleName.replace(/([a-z])([A-Z])/g, '$1 $2') }}</td>
                                             <template v-for="permissionType in ['Create', 'Read', 'Update', 'Delete']">
                                                 <td v-if="role.permissions.includes(permissionType + roleName)">
                                                     <input type="checkbox" :value="permissionType + roleName"
                                                         class="checkbox"
                                                         :checked="checkedPermissions[roleName] && checkedPermissions[roleName].includes(permissionType + roleName)"
-                                                        @change="togglePermission(roleName, permissionType + roleName)" />
+                                                        @change="OnChangePermission(roleName, permissionType + roleName)" />
                                                 </td>
                                                 <template v-else>
                                                     <td></td>

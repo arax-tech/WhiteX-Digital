@@ -17,7 +17,7 @@ export default {
     },
     clients: {
         clients: [],
-        client: {},
+        client: null,
         loading: false,
     },
     customers: {
@@ -62,6 +62,7 @@ export default {
     },
     feedbacks: {
         data: [],
+        feedback: null,
         loading: false,
     },
     solutions: {

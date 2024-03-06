@@ -5,6 +5,7 @@ import { onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toast-notification';
 import { useStore } from 'vuex';
+import { ClientPermissions } from '@/pages/admin/client/Permission';
 
 const store = useStore();
 const router = useRouter();
@@ -19,6 +20,25 @@ onBeforeMount(async () => {
     updateData();
 });
 const team = computed(() => store.state.teams.team);
+
+
+const checkedPermissions = ref({});
+
+
+
+
+const CheckAllPermissions = () => {
+    for (const roleName in ClientPermissions) {
+        checkedPermissions.value[roleName] = checkAll.value ? ClientPermissions[roleName].permissions.slice() : [];
+    }
+};
+
+const checkAll = ref(false);
+
+onMounted(() => {
+    CheckAllPermissions(); // initialize with all unchecked
+});
+
 const updateData = () => {
     const fetchedTeam = team.value;
     if (fetchedTeam) {
@@ -26,7 +46,11 @@ const updateData = () => {
         data.value.email = fetchedTeam.email;
         data.value.phone = fetchedTeam.phone;
         data.value.designation = fetchedTeam.designation;
-        // Update other properties as needed
+        
+        const selectedTeamPermissions = JSON.parse(fetchedTeam.permissions);
+        for (const roleName in ClientPermissions) {
+            checkedPermissions.value[roleName] = selectedTeamPermissions[roleName] || [];
+        }
     }
 };
 
@@ -45,30 +69,7 @@ const data = ref({
 });
 
 
-const checkedPermissions = ref({});
 
-const ClientPermissions = {
-    Teams: { permissions: ['CreateTeams', 'ReadTeams', 'UpdateTeams', 'DeleteTeams'] },
-    Subscription: { permissions: ['ReadSubscription', 'DeleteSubscription'] },
-    CancellationRequests: { permissions: ['ReadCancellationRequests', 'UpdateCancellationRequests', 'DeleteCancellationRequests'] },
-    BillingInformation: { permissions: ['ReadBillingInformation'] },
-    InvoiceManagement: { permissions: ['ReadInvoiceManagement'] },
-    SupportTicket: { permissions: ['CreateSupportTicket', 'ReadSupportTicket', 'UpdateSupportTicket', 'DeleteSupportTicket'] },
-    FeedBack: { permissions: ['CreateFeedBack', 'ReadFeedBack', 'UpdateFeedBack', 'DeleteFeedBack'] },
-};
-
-
-const CheckAllPermissions = () => {
-    for (const roleName in ClientPermissions) {
-        checkedPermissions.value[roleName] = checkAll.value ? ClientPermissions[roleName].permissions.slice() : [];
-    }
-};
-
-const checkAll = ref(false);
-
-onMounted(() => {
-    CheckAllPermissions(); // initialize with all unchecked
-});
 
 
 
@@ -78,6 +79,7 @@ const UpdateTeamFunction = async () => {
     formData.append('email', data.value.email);
     formData.append('phone', data.value.phone);
     formData.append('designation', data.value.designation);
+    formData.append('permissions', JSON.stringify(checkedPermissions.value));
     if (data.value.image) {
         formData.append('image', data.value.image);
     }
@@ -99,6 +101,17 @@ const ValidateFunction = () => {
             UpdateTeamFunction()
     })
 
+}
+
+const OnChangePermission = (roleName, permission) => {
+    if (checkedPermissions.value.hasOwnProperty(roleName)) {
+        const index = checkedPermissions.value[roleName].indexOf(permission);
+        if (index !== -1) {
+            checkedPermissions.value[roleName].splice(index, 1);
+        } else {
+            checkedPermissions.value[roleName].push(permission);
+        }
+    }
 }
 
 </script>
@@ -175,13 +188,13 @@ const ValidateFunction = () => {
                                     </thead>
                                     <tbody>
                                         <tr v-for="(role, roleName) in ClientPermissions" :key="roleName">
-                                            <td>{{ roleName }}</td>
+                                            <td>{{ roleName.replace(/([a-z])([A-Z])/g, '$1 $2') }}</td>
                                             <template v-for="permissionType in ['Create', 'Read', 'Update', 'Delete']">
                                                 <td v-if="role.permissions.includes(permissionType + roleName)">
                                                     <input type="checkbox" :value="permissionType + roleName"
                                                         class="checkbox"
                                                         :checked="checkedPermissions[roleName] && checkedPermissions[roleName].includes(permissionType + roleName)"
-                                                        @change="togglePermission(roleName, permissionType + roleName)" />
+                                                        @change="OnChangePermission(roleName, permissionType + roleName)" />
                                                 </td>
                                                 <template v-else>
                                                     <td></td>

@@ -41,6 +41,7 @@ class TeamController extends Controller
 			$team->role = $request->role;
 			$team->designation = $request->designation;
 			$team->phone = $request->phone;
+			$team->permissions = $request->permissions;
 			$team->password = Hash::make($request->password);
 
 			if ($request->hasFile('image')){
@@ -71,6 +72,7 @@ class TeamController extends Controller
 		$team->name = $request->name;
 		$team->email = $request->email;
 		$team->designation = $request->designation;
+		$team->permissions = $request->permissions;
 
 		if ($request->hasFile('image')){
 			if ($team->image) {unlink(public_path('assets/team/profile/').$team->image);}

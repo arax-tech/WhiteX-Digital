@@ -7,6 +7,7 @@ import Loading from '../../../components/Loading.vue';
 import moment from 'moment';
 
 const store = useStore();
+const router = useRouter();
 const toast = useToast();
 
 definePage({ meta: { action: 'read', subject: 'Admins' } })
@@ -23,6 +24,14 @@ const plan_id = ref(null)
 
 
 
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["Subscription"]?.includes("ReadSubscription")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
 
 
 
@@ -181,7 +190,9 @@ const currentTab = ref('Tab1')
                                     <VTabs v-model="currentTab">
                                         <VTab>Details</VTab>
                                         <VTab>Billing Info</VTab>
-                                        <VTab>Upgrade Downgrade Subscription</VTab>
+                                        <VTab v-if='allPermissions["Subscription"]?.includes("UpdateSubscription")'>
+                                            Upgrade
+                                            Downgrade Subscription</VTab>
                                     </VTabs>
 
                                     <VCardText>
@@ -332,8 +343,8 @@ const currentTab = ref('Tab1')
 
                                                     <AppSelect v-model="plan_id" :items="plans" item-title="name"
                                                         item-value="id" label="Select Plan"
-                                                        prepend-inner-icon="tabler-color-picker"
-                                                        persistent-placeholder placeholder="Choose.." />
+                                                        prepend-inner-icon="tabler-color-picker" persistent-placeholder
+                                                        placeholder="Choose.." />
 
                                                     <br>
 

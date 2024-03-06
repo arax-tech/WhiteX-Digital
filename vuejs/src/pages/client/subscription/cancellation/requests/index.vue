@@ -17,7 +17,14 @@ onMounted(() => store.dispatch("GetSubscriptionCancellations"));
 
 const cancellations = computed(() => store.state.subscriptionCancellations.cancellations);
 const loading = computed(() => store.state.subscriptionCancellations.loading);
-
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["CancellationRequests"]?.includes("ReadCancellationRequests")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
 
 // headers
 const headers = [
@@ -77,7 +84,8 @@ const DeleteSubCancellations = async (id) => {
                         <h2>Subscription Cancellation Requests</h2>
                     </div>
                     <div>
-                        <VBtn to="/client/subscription/cancellation/requests/create" rounded="pill" color="primary"
+                        <VBtn v-if='allPermissions["CancellationRequests"]?.includes("CreateCancellationRequests") '
+                            to="/client/subscription/cancellation/requests/create" rounded="pill" color="primary"
                             size="small" class="ml-5">
                             <VIcon start icon="tabler-plus" />Create
                         </VBtn>
@@ -114,11 +122,13 @@ const DeleteSubCancellations = async (id) => {
 
                     <template #item.subscription.action="{ item }">
                         <IconBtn
-                            @click="() => router.push('/client/subscription/cancellation/requests/edit/' + item.id) ">
+                            @click="() => router.push('/client/subscription/cancellation/requests/edit/' + item.id) "
+                            v-if='allPermissions["CancellationRequests"]?.includes("UpdateCancellationRequests") '>
                             <VTooltip activator="parent" location="top">Update</VTooltip>
                             <VIcon icon="tabler-edit" />
                         </IconBtn>
-                        <IconBtn @click="DeleteSubCancellations(item.id)">
+                        <IconBtn @click="DeleteSubCancellations(item.id)"
+                            v-if='allPermissions["CancellationRequests"]?.includes("DeleteCancellationRequests") '>
                             <VTooltip activator="parent" location="top">Delete</VTooltip>
                             <VIcon icon="tabler-trash" />
                         </IconBtn>

@@ -5,6 +5,7 @@ import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toast-notification';
 import { useStore } from 'vuex';
+import { ClientPermissions } from './Permission';
 
 const store = useStore();
 const router = useRouter();
@@ -18,20 +19,32 @@ const customers = computed(() => store.state.customers.data);
 const loading1 = computed(() => store.state.clients.loading);
 
 
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["Client"]?.includes("CreateClient")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
+
 const email = ref('')
 const refForm = ref()
+
+
+
 const checkedPermissions = ref({});
 
-const ClientPermissions = {
-    Teams: { permissions: ['CreateTeams', 'ReadTeams', 'UpdateTeams', 'DeleteTeams'] },
-    Subscription: { permissions: ['ReadSubscription', 'DeleteSubscription'] },
-    CancellationRequests: { permissions: ['ReadCancellationRequests', 'UpdateCancellationRequests', 'DeleteCancellationRequests'] },
-    BillingInformation: { permissions: ['ReadBillingInformation'] },
-    InvoiceManagement: { permissions: ['ReadInvoiceManagement'] },
-    SupportTicket: { permissions: ['CreateSupportTicket', 'ReadSupportTicket', 'UpdateSupportTicket', 'DeleteSupportTicket'] },
-    FeedBack: { permissions: ['CreateFeedBack', 'ReadFeedBack', 'UpdateFeedBack', 'DeleteFeedBack'] },
-};
-
+const OnChangePermission = (roleName, permission) => {
+    if (checkedPermissions.value.hasOwnProperty(roleName)) {
+        const index = checkedPermissions.value[roleName].indexOf(permission);
+        if (index !== -1) {
+            checkedPermissions.value[roleName].splice(index, 1);
+        } else {
+            checkedPermissions.value[roleName].push(permission);
+        }
+    }
+}
 
 const CheckAllPermissions = () => {
     for (const roleName in ClientPermissions) {
@@ -105,15 +118,6 @@ const ValidateFunction = () => {
                                     item-value="email" label="Client" prepend-inner-icon="tabler-user"
                                     persistent-placeholder return-object :rules="[requiredValidator]" />
 
-                                <!-- <div className="form-group">
-                                    <label className="form-label">Email</label>
-                                    <select class="form-control" v-model="email">
-                                        <option v-for="(customer, index) in customers" :key="index"
-                                            :value="`${customer.id}--|--${customer.email}`">
-                                            {{ customer.username }} ---- {{ customer.email }}
-                                        </option>
-                                    </select>
-                                </div> -->
 
 
                             </VCol>
@@ -142,13 +146,13 @@ const ValidateFunction = () => {
                                     </thead>
                                     <tbody>
                                         <tr v-for="(role, roleName) in ClientPermissions" :key="roleName">
-                                            <td>{{ roleName }}</td>
+                                            <td>{{ roleName.replace(/([a-z])([A-Z])/g, '$1 $2') }}</td>
                                             <template v-for="permissionType in ['Create', 'Read', 'Update', 'Delete']">
                                                 <td v-if="role.permissions.includes(permissionType + roleName)">
                                                     <input type="checkbox" :value="permissionType + roleName"
                                                         class="checkbox"
                                                         :checked="checkedPermissions[roleName] && checkedPermissions[roleName].includes(permissionType + roleName)"
-                                                        @change="togglePermission(roleName, permissionType + roleName)" />
+                                                        @change="OnChangePermission(roleName, permissionType + roleName)" />
                                                 </td>
                                                 <template v-else>
                                                     <td></td>
@@ -165,7 +169,8 @@ const ValidateFunction = () => {
                             <!-- <button @click="getCheckedData">Get Checked Data</button> -->
 
                             <VCol cols="12">
-                                <VBtn type="submit" :disabled="loading1">{{ loading1 ? 'Creating...' : 'Create' }}</VBtn>
+                                <VBtn type="submit" :disabled="loading1">{{ loading1 ? 'Creating...' : 'Create' }}
+                                </VBtn>
                             </VCol>
                         </VRow>
                     </VForm>

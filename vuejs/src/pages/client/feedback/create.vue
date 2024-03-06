@@ -1,76 +1,73 @@
 <script setup>
-import { computed, onMounted, onBeforeMount } from 'vue';
+import { computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toast-notification';
 import { useStore } from 'vuex';
 import Loading from '@/components/Loading.vue';
-import moment from 'moment';
-import { useRouter, useRoute } from 'vue-router';
+
 const store = useStore();
-const toast = useToast();
 const router = useRouter();
-const route = useRoute();
+const toast = useToast();
 
 definePage({ meta: { action: 'read', subject: 'Clients' } })
-onMounted(() => document.title = "Client - Update Requests ");
+onMounted(() => document.title = "Client - Create Feedback");
 
-onBeforeMount(async () => {
-    await store.dispatch("GetSingleubscriptionCancellation", route.params.id);
-    UpdateData();
-});
-
-const loading = computed(() => store.state.subscriptionCancellations.loading);
-const cancellation = computed(() => store.state.subscriptionCancellations.cancellation);
-
+const loading = computed(() => store.state.feedbacks.loading);
 const user = computed(() => store.state.auth.user);
 const allPermissions = JSON.parse(user.value.permissions);
 onMounted(() => {
-    if (!allPermissions["CancellationRequests"]?.includes("UpdateCancellationRequests")) {
+    if (!allPermissions["FeedBack"]?.includes("CreateFeedBack")) {
         alert("You don't have permission to access this resource...");
         router.go(-1);
     }
 });
 
-const UpdateData = () => {
-    const FetchData = cancellation.value;
-    if (FetchData){
-        data.value.title = FetchData.title;
-        data.value.description = FetchData.description;
-    }
-}
-
-
-
 const refForm = ref()
 const data = ref({
-    title : '',
-    description : '',
+    title: '',
+    description: '',
+    ratings: '',
+    category: '',
 })
 
-
+const categories = [
+    'General',
+    'Service',
+    'Product',
+    'Website',
+]
+const ratings = [
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+]
 const ValidateFunction = () => {
     refForm?.value?.validate().then(({ valid: isValid }) => {
         if (isValid)
-            UpdateRequestFunction()
+            CreateFeedbackFunction()
     })
 
 }
 
 
-const UpdateRequestFunction = async () => {
+const CreateFeedbackFunction = async () => {
     const formData = new FormData();
     formData.append('title', data.value.title);
     formData.append('description', data.value.description);
+    formData.append('ratings', data.value.ratings);
+    formData.append('category', data.value.category);
     try {
-        const response = await store.dispatch('UpdateSubscriptionCancellation', { id: cancellation.value.id, formData });
+        const response = await store.dispatch('CreateFeedback', formData);
         if (response.status === 200) {
             toast.success(response.message);
-            router.push('/client/subscription/cancellation/requests');
+            router.push('/client/feedback');
         }
     } catch (error) {
         console.error(error);
     }
 };
-
 </script>
 
 <template>
@@ -81,11 +78,10 @@ const UpdateRequestFunction = async () => {
                 <VCardText
                     style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
                     <div>
-                        <h2>Update Requests</h2>
+                        <h2>Create Feedback</h2>
                     </div>
                     <div>
-                        <VBtn to="/client/subscription/cancellation/requests" rounded="pill" color="primary"
-                            size="small" class="ml-5">
+                        <VBtn to="/client/feedback" rounded="pill" color="primary" size="small" class="ml-5">
                             <VIcon start icon="tabler-arrow-left" />Back
                         </VBtn>
                     </div>
@@ -98,19 +94,33 @@ const UpdateRequestFunction = async () => {
                         <VRow>
 
 
-                            <VCol md="12" cols="12">
-                                <AppTextField prepend-inner-icon="tabler-user" v-model="data.title" placeholder="Title"
+                            <VCol md="4" cols="12">
+                                <AppTextField prepend-inner-icon="tabler-note" v-model="data.title" placeholder="Title"
                                     persistent-placeholder label="Title" :rules="[requiredValidator]" />
                             </VCol>
 
-                            <VCol md="12" cols="12">
-                                <AppTextField prepend-inner-icon="tabler-note" v-model="data.description"
-                                    placeholder="Description" persistent-placeholder label="Description"
+
+                            <VCol md="4" cols="12">
+                                <AppSelect v-model="data.category" :items="categories"
+                                    prepend-inner-icon="tabler-color-picker" label="Category"
+                                    :rules="[requiredValidator]" />
+                            </VCol>
+                            <VCol md="4" cols="12">
+                                <AppSelect v-model="data.ratings" :items="ratings"
+                                    prepend-inner-icon="tabler-color-picker" label="Ratings"
                                     :rules="[requiredValidator]" />
                             </VCol>
 
+                            <VCol md="12" cols="12">
+                                <AppTextarea prepend-inner-icon="tabler-message-2" v-model="data.description"
+                                    placeholder="Description" persistent-placeholder label="Description"
+                                    :rules="[requiredValidator]" rows="3" />
+                            </VCol>
+
+
                             <VCol cols="12">
-                                <VBtn type="submit" :disabled="loading">Update</VBtn>
+                                <VBtn type="submit" :disabled="loading">{{ loading ? 'Creating...' : 'Create' }}
+                                </VBtn>
                             </VCol>
                         </VRow>
                     </VForm>
@@ -118,6 +128,10 @@ const UpdateRequestFunction = async () => {
 
                 </VCardText>
             </VCard>
+
         </VCol>
     </VRow>
 </template>
+
+
+

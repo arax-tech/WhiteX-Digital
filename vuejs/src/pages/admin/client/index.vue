@@ -22,7 +22,14 @@ const clients = computed(() => store.state.clients.clients);
 const loading = computed(() => store.state.clients.loading);
 
 
-
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["Client"]?.includes("ReadClient")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
 
 
 
@@ -79,14 +86,15 @@ const DeleteClientn = async (id) => {
 <template>
     <VRow>
         <!-- 👉 Admins  -->
-        <Loading v-if="loading"/>
+        <Loading v-if="loading" />
         <VCol v-else cols="12">
             <VCard>
                 <VCardText style="border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity))">
                     <VRow>
                         <VCol cols="8" md="8">
                             <h2>Clients
-                                <VBtn to="/admin/client/create" rounded="pill" color="primary" size="small" class="ml-5">
+                                <VBtn v-if='allPermissions["Client"]?.includes("CreateClient") '
+                                    to="/admin/client/create" rounded="pill" color="primary" size="small" class="ml-5">
                                     <VIcon start icon="tabler-plus" />
                                     Create
                                 </VBtn>
@@ -109,11 +117,12 @@ const DeleteClientn = async (id) => {
 
                         <div class="d-flex align-center">
                             <div>
-                                <VImg :src="item.image?.length > 0 ? item.image : '/placeholder.jpg' " height="40" width="40" />
+                                <VImg :src="item.image?.length > 0 ? item.image : '/placeholder.jpg' " height="40"
+                                    width="40" />
                             </div>
                             <div class="d-flex flex-column ms-3">
                                 <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{ item.name
-                                                                    }}</span>
+                                    }}</span>
                                 <span class="text-xs">{{ item.designation }}</span>
                             </div>
                         </div>
@@ -141,11 +150,13 @@ const DeleteClientn = async (id) => {
 
                     <!-- Delete -->
                     <template #item.client.delete="{ item }">
-                        <IconBtn @click="() => router.push('/admin/admin/edit/' + item.id)">
+                        <IconBtn @click="() => router.push('/admin/client/edit/' + item.id)"
+                            v-if='allPermissions["Client"]?.includes("UpdateClient")'>
                             <VTooltip activator="parent" location="top">Update</VTooltip>
                             <VIcon icon="tabler-edit" />
                         </IconBtn>
-                        <IconBtn @click="DeleteClientn(item.id)">
+                        <IconBtn @click="DeleteClientn(item.id)"
+                            v-if='allPermissions["Client"]?.includes("DeleteClient")'>
                             <VTooltip activator="parent" location="top">Delete</VTooltip>
                             <VIcon icon="tabler-trash" />
                         </IconBtn>

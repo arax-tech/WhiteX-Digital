@@ -17,6 +17,15 @@ onMounted(() => store.dispatch("GetClients"));
 const clients = computed(() => store.state.clients.clients);
 const loading = computed(() => store.state.clients.loading);
 
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["CustomInvoice"]?.includes("CreateCustomInvoice")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
+
 const refForm = ref()
 
 const rows = reactive([

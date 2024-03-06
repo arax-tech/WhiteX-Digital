@@ -6,6 +6,7 @@ import { useStore } from 'vuex';
 import Loading from '@/components/Loading.vue';
 
 const store = useStore();
+const router = useRouter();
 
 definePage({ meta: { action: 'read', subject: 'Admins' } })
 onMounted(() => document.title = "Admin - Subscription Invoices");
@@ -17,6 +18,14 @@ onMounted(() => store.dispatch("GetSubscriptionInvoices"));
 const invoices = computed(() => store.state.subscriptionInvoices.data);
 const loading = computed(() => store.state.subscriptionInvoices.loading);
 
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["WooCommerceInvoice"]?.includes("ReadWooCommerceInvoice")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
 
 
 const search = ref('')

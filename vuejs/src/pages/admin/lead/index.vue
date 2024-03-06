@@ -18,7 +18,6 @@ onMounted(() => store.dispatch("GetLeads"));
 const leads = computed(() => store.state.leads.data);
 const loading = computed(() => store.state.leads.loading);
 
-console.log(leads.value);
 
 const currentTab = ref('Tab1')
 
@@ -26,6 +25,15 @@ const SubscriptionRegistrationsFields = ['First Name', 'Last Name', 'Phone', 'Em
 const DigitalMarketingBundlePlansFields = ['Text* Field (your-name)', 'Number* Field (yourPhoneNumber)', 'Email* Field (your-email)', 'Text* Field (yourCompanyName)', 'Url* Field (yourCompanyUrl)', 'Select* Field (yourRole)', 'Radio Field (yourLast90DaysAdSpend)', 'Select Field (referralSource)'];
 const FreeMarketingAnalysisFields = ['Full Name*', 'Phone number*', 'Email Address*', 'Company Name*', 'Company Website\/Facebook Page URL*'];
 const BookFreeStrategyCallsFields = ['Full Name*', 'Phone number*', 'Email Address*', 'Company Name*', 'Company Website\/Facebook Page URL*', 'Ad Spend in the Last 90 Days (Optional):)', 'Current Marketing Challenges', 'Acceptance Field'];
+
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["LeadTracking"]?.includes("ReadLeadTracking")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
 
 
 

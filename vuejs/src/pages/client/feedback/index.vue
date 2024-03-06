@@ -2,18 +2,30 @@
 import { computed, onMounted } from 'vue';
 import { useToast } from 'vue-toast-notification';
 import { VDataTable } from 'vuetify/labs/VDataTable';
+import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
-import Loading from '../../../components/Loading.vue';
+import Loading from '@/components/Loading.vue';
 
 const store = useStore();
 const toast = useToast();
+const router = useRouter();
 
-definePage({ meta: { action: 'read', subject: 'Admins' } })
-onMounted(() => document.title = "Admin - Feedbacks");
+definePage({ meta: { action: 'read', subject: 'Clients' } })
+onMounted(() => document.title = "Client - Feedbacks");
 onMounted(() => store.dispatch("GetFeedbacks"));
 
 const feedbacks = computed(() => store.state.feedbacks.data);
 const loading = computed(() => store.state.feedbacks.loading);
+
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["FeedBack"]?.includes("ReadFeedBack")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
+
 
 const feedback = ref({});
 const action_taken = ref('')
@@ -27,10 +39,7 @@ const OpenModal = (fback) => {
     action_taken.value = fback.action_taken;
 }
 const headers = [
-    {
-        title: 'Client',
-        key: 'feedback.client',
-    },
+    
     {
         title: 'Title',
         key: 'feedback.title',
@@ -115,33 +124,14 @@ const DeleteMessage = async (id) => {
                     <VRow>
                         <VCol cols="8" md="8">
                             <h2>Feedbacks
-                                <!-- Update -->
-                                <VDialog v-if="feedback" v-model="EditFeedBack" persistent width="600">
-                                    <DialogCloseBtn @click="EditFeedBack = !EditFeedBack" />
-                                    <VCard title="Update Feedback">
-                                        <VDivider class="mt-3" />
-                                        <VCardText>
-                                            <VForm ref="refForm" @submit.prevent="UpdateValidateFunction">
-                                                <VRow>
-
-                                                    <VCol cols="12" md="12">
-                                                        <AppTextField v-model="action_taken"
-                                                            prepend-inner-icon="tabler-note" placeholder="Action Taken"
-                                                            persistent-placeholder label="Action Taken"
-                                                            :rules="[requiredValidator]" />
-                                                    </VCol>
-
-
-                                                    <VCol cols="12">
-                                                        <VBtn type="submit" :disabled="loading">{{ loading ?
-                                                            'Updating...' : 'Update' }}</VBtn>
-                                                    </VCol>
-                                                </VRow>
-                                            </VForm>
-                                        </VCardText>
-                                    </VCard>
-                                </VDialog>
+                                <VBtn v-if='allPermissions["FeedBack"]?.includes("CreateFeedBack") '
+                                    to="/client/feedback/create" rounded="pill" color="primary" size="small"
+                                    class="ml-5">
+                                    <VIcon start icon="tabler-plus" />
+                                    Create
+                                </VBtn>
                             </h2>
+
 
                         </VCol>
                         <VCol cols="4" md="4">
@@ -154,23 +144,7 @@ const DeleteMessage = async (id) => {
                 <!-- 👉 Data Table  -->
                 <VDataTable :headers="headers" :items="feedbacks" :search="search" :items-per-page="5"
                     class="text-no-wrap mb-4">
-                    <!-- product -->
-                    <template #item.feedback.client="{ item }">
 
-                        <div class="d-flex align-center">
-                            <div>
-                                <VImg rounded
-                                    :src="item.client?.image?.length > 0 ? item.client?.image : '/placeholder.jpg'"
-                                    height="40" width="40" />
-                            </div>
-                            <div class="d-flex flex-column ms-3">
-                                <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{
-                                    item.client?.name
-                                    }}</span>
-                                <span class="text-xs">{{ item.client.designation }}</span>
-                            </div>
-                        </div>
-                    </template>
                     <template #item.feedback.title="{ item }">
                         <span class="text-xs">{{ item.title }}</span>
                     </template>
@@ -190,12 +164,14 @@ const DeleteMessage = async (id) => {
                         <span class="text-xs">{{item?.action_taken ? item?.action_taken : '-'}}</span>
                     </template>
 
-                    <template #item.feedback.action="{ item }">
-                        <IconBtn @click="OpenModal(item)">
+                    <template #item.feedback.action="{ item }"
+                        v-if='allPermissions["FeedBack"]?.includes("UpdateFeedBack")'>
+                        <IconBtn @click="() => router.push('/client/feedback/edit/' + item.id)">
                             <VTooltip activator="parent" location="top">Update</VTooltip>
                             <VIcon icon="tabler-edit" />
                         </IconBtn>
-                        <IconBtn @click="DeleteMessage(item.id)">
+                        <IconBtn @click="DeleteMessage(item.id)"
+                            v-if='allPermissions["FeedBack"]?.includes("DeleteFeedBack")'>
                             <VTooltip activator="parent" location="top">Delete</VTooltip>
                             <VIcon icon="tabler-trash" />
                         </IconBtn>

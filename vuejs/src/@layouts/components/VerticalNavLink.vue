@@ -62,6 +62,7 @@ const hideTitleAndBadge = configStore.isVerticalNavMini()
       </TransitionGroup>
     </Component>
   </li>
+  
 </template>
 
 <style lang="scss">

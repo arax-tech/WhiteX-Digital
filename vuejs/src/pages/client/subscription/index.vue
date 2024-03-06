@@ -8,17 +8,23 @@ import { useStore } from 'vuex';
 
 const store = useStore();
 const toast = useToast();
+const router = useRouter();
 
 definePage({ meta: { action: 'read', subject: 'Clients' } })
 onMounted(() => document.title = "Client - Subscription");
+onMounted(() => {
+    if (user.value && user.value.customer_id) {
+        store.dispatch("GetSubscription", user.value.customer_id);
+    }
+});
 
 const user = computed(() => store.state.auth.user);
-
-
+const allPermissions = JSON.parse(user.value.permissions);
 onMounted(() => {
-  if (user.value && user.value.customer_id) {
-    store.dispatch("GetSubscription", user.value.customer_id);
-  }
+    if (!allPermissions["Subscription"]?.includes("ReadSubscription")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
 });
 
 const loading = computed(() => store.state.subscription.loading);
@@ -100,33 +106,39 @@ const currentTab = ref('Tab1')
                 </VCardText>
 
                 <!-- 👉 Data Table  -->
-                <VDataTable :headers="headers" :items="[subscription1]" :items-per-page="5"
-                    class="text-no-wrap mb-4">
+                <VDataTable :headers="headers" :items="[subscription1]" :items-per-page="5" class="text-no-wrap mb-4">
                     <!-- product -->
                     <template #item.subscription.subscription="{ item }">
-                        <span class="text-xs">{{ item?.id }} for {{ item?.billing?.first_name }} {{ item?.billing?.last_name }}</span>
+                        <span class="text-xs">{{ item?.id }} for {{ item?.billing?.first_name }} {{
+            item?.billing?.last_name }}</span>
                     </template>
+
                     <template #item.subscription.items="{ item }">
                         <span class="text-xs">{{ item?.line_items[0]?.name }}</span>
                     </template>
+
                     <template #item.subscription.total="{ item }">
                         <span class="text-xs">{{ item?.line_items[0]?.subtotal }} / {{ item?.billing_period }}</span>
                     </template>
+
                     <template #item.subscription.start_date="{ item }">
                         <span class="text-xs">
                             {{ item?.start_date_gmt ? moment(item?.start_date_gmt).format('DD MMM yyyy') : '-' }}
                         </span>
                     </template>
+
                     <template #item.subscription.next_payment="{ item }">
                         <span class="text-xs">{{ item?.end_date_gmt ? moment(item?.end_date_gmt).format('DD MMM yyyy') :
-                            '-'
+            '-'
                             }}</span>
                     </template>
+
                     <template #item.subscription.end_date="{ item }">
                         <span class="text-xs">{{ item?.end_date_gmt ? moment(item?.end_date_gmt).format('DD MMM yyyy') :
-                            '-'
+            '-'
                             }}</span>
                     </template>
+
                     <template #item.subscription.status="{ item }">
                         <VChip v-if="item.status === 'pending-cancel'" color="secondary">Pending Cancel</VChip>
                         <VChip v-else-if="item.status === 'expired'" color="info">Expired</VChip>
@@ -139,6 +151,7 @@ const currentTab = ref('Tab1')
 
 
                     <!-- Delete -->
+
                     <template #item.subscription.action="{ item }">
                         <IconBtn @click="OpenModal(item)">
                             <VTooltip activator="parent" location="top">View Subscription Details</VTooltip>
@@ -173,7 +186,7 @@ const currentTab = ref('Tab1')
                                                         <label
                                                             class="text-h6 text-overline mb-1 font-weight-bolder">Subscription</label><br />
                                                         <label class="mb-1">#{{ subscription?.id }} for {{
-                                                            `${subscription?.user?.first_name}
+            `${subscription?.user?.first_name}
                                                             ${subscription?.user?.last_name}` }}</label>
                                                     </VCol>
                                                     <VCol cols="4">
@@ -189,7 +202,7 @@ const currentTab = ref('Tab1')
                                                         </label><br />
                                                         <label class="mb-1">{{ subscription?.line_items[0]?.subtotal }}
                                                             / {{
-                                                            subscription?.billing_period }}</label>
+            subscription?.billing_period }}</label>
                                                     </VCol>
                                                 </VRow>
                                                 <VRow>
@@ -198,8 +211,8 @@ const currentTab = ref('Tab1')
                                                             class="text-h6 text-overline mb-1 font-weight-bolder">Start
                                                             Date</label><br />
                                                         <label class="mb-1">{{ subscription?.start_date_gmt ?
-                                                            moment(subscription?.start_date_gmt).format('DD MMM yyyy') :
-                                                            '-'
+            moment(subscription?.start_date_gmt).format('DD MMM yyyy') :
+            '-'
                                                             }}</label>
                                                     </VCol>
                                                     <VCol cols="4">
@@ -207,16 +220,16 @@ const currentTab = ref('Tab1')
                                                             class="text-h6 text-overline mb-1 font-weight-bolder">Next
                                                             Payment </label><br />
                                                         <label class="mb-1">{{ subscription?.end_date_gmt ?
-                                                            moment(subscription?.end_date_gmt).format('DD MMM yyyy') :
-                                                            '-'
+            moment(subscription?.end_date_gmt).format('DD MMM yyyy') :
+            '-'
                                                             }}</label>
                                                     </VCol>
                                                     <VCol cols="4">
                                                         <label class="text-h6 text-overline mb-1 font-weight-bolder">End
                                                             Date </label><br />
                                                         <label class="mb-1">{{ subscription?.end_date_gmt ?
-                                                            moment(subscription?.end_date_gmt).format('DD MMM yyyy') :
-                                                            '-'
+            moment(subscription?.end_date_gmt).format('DD MMM yyyy') :
+            '-'
                                                             }}</label>
                                                     </VCol>
                                                 </VRow>
@@ -250,7 +263,7 @@ const currentTab = ref('Tab1')
                                                             class="text-h6 text-overline mb-1 font-weight-bolder">Full
                                                             Name</label><br />
                                                         <label class="mb-1">{{ subscription?.billing?.first_name }} {{
-                                                            subscription?.billing?.last_name }}</label>
+            subscription?.billing?.last_name }}</label>
                                                     </VCol>
                                                     <VCol cols="4">
                                                         <label
@@ -304,7 +317,7 @@ const currentTab = ref('Tab1')
                                                             class="text-h6 text-overline mb-1 font-weight-bolder">Full
                                                             Address </label><br />
                                                         <label class="mb-1">{{ subscription?.billing?.address_1 }}, {{
-                                                            subscription?.billing?.address_2 }}</label>
+            subscription?.billing?.address_2 }}</label>
                                                     </VCol>
                                                 </VRow>
                                             </VWindowItem>
@@ -321,6 +334,3 @@ const currentTab = ref('Tab1')
         </VCol>
     </VRow>
 </template>
-
-
-

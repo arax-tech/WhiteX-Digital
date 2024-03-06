@@ -163,6 +163,7 @@ export const SetFeedbacks = (state, [loading, data = null]) => {
         state.feedbacks = {
             ...state.feedbacks,
             data: data.feedbacks,
+            feedback: data.feedback,
         };
     }
 
@@ -207,7 +208,6 @@ export const SetTeams = (state, [loading, data = null]) => {
 };
 export const SetSubscription = (state, [loading, data = null]) => {
     if (data) {
-        console.log(data);
         state.subscription = {
             ...state.subscription,
             data: data,

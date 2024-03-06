@@ -6,6 +6,7 @@ import { useStore } from 'vuex';
 import Loading from '../../../components/Loading.vue';
 
 const store = useStore();
+const router = useRouter();
 const toast = useToast();
 
 definePage({ meta: { action: 'read', subject: 'Admins' } })
@@ -14,6 +15,15 @@ onMounted(() => store.dispatch("GetFeedbacks"));
 
 const feedbacks = computed(() => store.state.feedbacks.data);
 const loading = computed(() => store.state.feedbacks.loading);
+
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["FeedBack"]?.includes("ReadFeedBack")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
 
 const feedback = ref({});
 const action_taken = ref('')
@@ -191,11 +201,12 @@ const DeleteMessage = async (id) => {
                     </template>
 
                     <template #item.feedback.action="{ item }">
-                        <IconBtn @click="OpenModal(item)">
+                        <IconBtn @click="OpenModal(item)" v-if='allPermissions["FeedBack"]?.includes("UpdateFeedBack")'>
                             <VTooltip activator="parent" location="top">Update</VTooltip>
                             <VIcon icon="tabler-edit" />
                         </IconBtn>
-                        <IconBtn @click="DeleteMessage(item.id)">
+                        <IconBtn @click="DeleteMessage(item.id)"
+                            v-if='allPermissions["FeedBack"]?.includes("DeleteFeedBack")'>
                             <VTooltip activator="parent" location="top">Delete</VTooltip>
                             <VIcon icon="tabler-trash" />
                         </IconBtn>

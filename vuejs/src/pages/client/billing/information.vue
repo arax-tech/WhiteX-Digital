@@ -6,11 +6,19 @@ import Loading from '@/components/Loading.vue';
 
 const store = useStore();
 const toast = useToast();
+const router = useRouter();
 
 definePage({ meta: { action: 'read', subject: 'Clients' } })
 onMounted(() => document.title = "Client - Billing");
 
 const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["BillingInformation"]?.includes("ReadBillingInformation")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
 
 onBeforeMount(async () => {
     if (user.value && user.value.customer_id) {

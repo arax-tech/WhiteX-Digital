@@ -237,6 +237,29 @@ export const CreateClientAction = async ({ commit }, formData) => {
         return error.response.data;
     }
 }
+export const GetSingleClientAction = async ({ commit }, id) => {
+    commit('SetClients', [true])
+    try {
+        const { data } = await axiosClient.get(`/admin/client/single/${id}`);
+        commit('SetClients', [false, data])
+        return data;    
+    } catch (error) {
+        commit('SetClients', [false])
+        return error.response.data;
+    }
+}
+export const UpdateClientAction = async ({ commit }, { id, formData }) => {
+    console.log(formData);
+    commit('SetClients', [true])
+    try {
+        const { data } = await axiosClient.post(`/admin/client/update/${id}`, formData);
+        commit('SetClients', [false])
+        return data;
+    } catch (error) {
+        commit('SetClients', [false])
+        return error.response.data;
+    }
+}
 export const DeleteClientAction = async ({ commit }, id) => {
     commit('SetClients', [true])
     try {
@@ -517,7 +540,8 @@ export const CreateInvoice = async ({ commit }, formData) => {
 export const SingleInvoice = async ({ commit }, id) => {
     commit('SetInvoices', [true])
     try {
-        const { data } = await axiosClient.get(`/admin/invoice/single/${id}`);
+        const role = localStorage.getItem('role').toLowerCase();
+        const { data } = await axiosClient.get(`/${role}/invoice/single/${id}`);
         commit('SetInvoices', [false, data])
         return data;
     } catch (error) {
@@ -617,7 +641,19 @@ export const GetLeads = async ({ commit }) => {
 export const GetSupports = async ({ commit }) => {
     commit('SetSupports', [true])
     try {
-        const { data } = await axiosClient.get('/admin/support');
+        const role = localStorage.getItem('role').toLowerCase();
+        const { data } = await axiosClient.get(`/${role}/support`);
+        commit('SetSupports', [false, data])
+        return data;
+    } catch (error) {
+        commit('SetSupports', [false])
+        return error.response.data;
+    }
+}
+export const CreateSupport = async ({ commit }, formData) => {
+    commit('SetSupports', [true])
+    try {
+        const { data } = await axiosClient.post('/client/support/store', formData);
         commit('SetSupports', [false, data])
         return data;
     } catch (error) {
@@ -628,7 +664,8 @@ export const GetSupports = async ({ commit }) => {
 export const GetSingleSupport = async ({ commit }, id) => {
     commit('SetSingleSupport', [true])
     try {
-        const { data } = await axiosClient.get(`/admin/support/single/${id}`);
+        const role = localStorage.getItem('role').toLowerCase();
+        const { data } = await axiosClient.get(`/${role}/support/single/${id}`);
         commit('SetSingleSupport', [false, data])
         return data;
     } catch (error) {
@@ -639,7 +676,8 @@ export const GetSingleSupport = async ({ commit }, id) => {
 export const CreateSupportChat = async ({ commit }, { id, formData }) => {
     commit('SetSupports', [true])
     try {
-        const { data } = await axiosClient.post(`/admin/support/chat/store/${id}`, formData);
+        const role = localStorage.getItem('role').toLowerCase();
+        const { data } = await axiosClient.post(`/${role}/support/chat/store/${id}`, formData);
         commit('SetSupports', [false, data])
         return data;
     } catch (error) {
@@ -650,7 +688,8 @@ export const CreateSupportChat = async ({ commit }, { id, formData }) => {
 export const UpdateSupport = async ({ commit }, { id, formData }) => {
     commit('SetSupports', [true])
     try {
-        const { data } = await axiosClient.post(`/admin/support/update/${id}`, formData);
+        const role = localStorage.getItem('role').toLowerCase();
+        const { data } = await axiosClient.post(`/${role}/support/update/${id}`, formData);
         commit('SetSupports', [false, data])
         return data;
     } catch (error) {
@@ -661,7 +700,8 @@ export const UpdateSupport = async ({ commit }, { id, formData }) => {
 export const DeleteSupport = async ({ commit }, id) => {
     commit('SetSupports', [true])
     try {
-        const { data } = await axiosClient.get(`/admin/support/delete/${id}`);
+        const role = localStorage.getItem('role').toLowerCase();
+        const { data } = await axiosClient.get(`/${role}/support/delete/${id}`);
         commit('SetSupports', [false])
         return data;
     } catch (error) {
@@ -679,7 +719,31 @@ export const DeleteSupport = async ({ commit }, id) => {
 export const GetFeedbacks = async ({ commit }) => {
     commit('SetFeedbacks', [true])
     try {
-        const { data } = await axiosClient.get('/admin/feedback');
+        const role = localStorage.getItem('role').toLowerCase();
+        const { data } = await axiosClient.get(`/${role}/feedback`);
+        commit('SetFeedbacks', [false, data])
+        return data;
+    } catch (error) {
+        commit('SetFeedbacks', [false])
+        return error.response.data;
+    }
+}
+export const CreateFeedback = async ({ commit }, formData) => {
+    commit('SetFeedbacks', [true])
+    try {
+        const { data } = await axiosClient.post('/client/feedback/store', formData);
+        commit('SetFeedbacks', [false, data])
+        return data;
+    } catch (error) {
+        commit('SetFeedbacks', [false])
+        return error.response.data;
+    }
+}
+export const GetSingleFeedback = async ({ commit }, id) => {
+    commit('SetFeedbacks', [true])
+    try {
+        const role = localStorage.getItem('role').toLowerCase();
+        const { data } = await axiosClient.get(`/${role}/feedback/single/${id}`);
         commit('SetFeedbacks', [false, data])
         return data;
     } catch (error) {
@@ -690,7 +754,8 @@ export const GetFeedbacks = async ({ commit }) => {
 export const UpdateFeedback = async ({ commit }, { id, formData }) => {
     commit('SetFeedbacks', [true])
     try {
-        const { data } = await axiosClient.post(`/admin/feedback/update/${id}`, formData);
+        const role = localStorage.getItem('role').toLowerCase();
+        const { data } = await axiosClient.post(`/${role}/feedback/update/${id}`, formData);
         commit('SetFeedbacks', [false, data])
         return data;
     } catch (error) {
@@ -701,7 +766,8 @@ export const UpdateFeedback = async ({ commit }, { id, formData }) => {
 export const DeleteFeedback = async ({ commit }, id) => {
     commit('SetFeedbacks', [true])
     try {
-        const { data } = await axiosClient.get(`/admin/feedback/delete/${id}`);
+        const role = localStorage.getItem('role').toLowerCase();
+        const { data } = await axiosClient.get(`/${role}/feedback/delete/${id}`);
         commit('SetFeedbacks', [false])
         return data;
     } catch (error) {

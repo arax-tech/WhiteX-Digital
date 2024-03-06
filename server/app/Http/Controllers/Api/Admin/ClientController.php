@@ -68,9 +68,6 @@ class ClientController extends Controller
     {
     	error_reporting(0);
 		$client = User::find($id);
-		$res = explode("--|--", $request->email);
-		$client->customer_id = $res[0];
-		$client->email = $res[1];
 		$client->permissions = $request->permissions;
 		$client->save();
 		return response()->json([

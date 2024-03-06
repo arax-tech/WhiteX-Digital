@@ -70,7 +70,14 @@ const handleNavScroll = evt => {
 const store = useStore();
 onMounted(() => store.dispatch('GetAuthUser'));
 const setting = computed(() => store.state.auth.setting);
+const menus = computed(() => store.state.auth.menus);
 const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered)
+
+const handleClick = (menu) => {
+  if (menu.status === 'Active') {
+    window.open(menu.link, '_blank');
+  }
+}
 </script>
 
 <template>
@@ -108,6 +115,7 @@ const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered)
           @click="configStore.isVerticalNavCollapsed = !configStore.isVerticalNavCollapsed" />
         <Component :is="layoutConfig.app.iconRenderer || 'div'" class="header-action d-lg-none"
           v-bind="layoutConfig.icons.close" @click="toggleIsOverlayNavActive(false)" />
+
       </slot>
     </div>
     <slot name="before-nav-items">
@@ -117,7 +125,23 @@ const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered)
       <PerfectScrollbar :key="configStore.isAppRTL" tag="ul" class="nav-items" :options="{ wheelPropagation: false }"
         @ps-scroll-y="handleNavScroll">
         <Component :is="resolveNavItemComponent(item)" v-for="(item, index) in navItems" :key="index" :item="item" />
+        <ul style="list-style-type:none" v-if="menus.length > 0">
+          <li class="nav-section-title" style="margin-top:10px">
+            <div class="title-wrapper">
+              <span class="title-text" icon="tabler-separator">Custom Solution</span>
+            </div>
+          </li>
+          <li class="nav-link" v-for="(menu, index) in menus" :key="index">
+            <a href="#" class="" @click.prevent="handleClick(menu)">
+              <VTooltip activator="parent" location="top">{{ menu?.tooltip }}</VTooltip>
+              <i class="v-icon nav-item-icon tabler-list"></i>
+              <span class="nav-item-title">{{ menu?.name }}</span>
+            </a>
+          </li>
+        </ul>
+
       </PerfectScrollbar>
+
     </slot>
   </Component>
 </template>

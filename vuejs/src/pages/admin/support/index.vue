@@ -19,7 +19,14 @@ const admins = computed(() => store.state.admins.admins);
 const supports = computed(() => store.state.supports.data);
 const loading = computed(() => store.state.supports.loading);
 
-
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["SupportTicket"]?.includes("ReadSupportTicket")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
 
 const search = ref('')
 const status = ref('')
@@ -203,7 +210,8 @@ const DeleteSupport = async (id) => {
                     </template>
 
                     <template #item.support.action="{ item }">
-                        <IconBtn @click="OpenModal(item)">
+                        <IconBtn @click="OpenModal(item)"
+                            v-if='allPermissions["SupportTicket"]?.includes("UpdateSupportTicket")'>
                             <VTooltip activator="parent" location="top">Update</VTooltip>
                             <VIcon icon="tabler-edit" />
                         </IconBtn>
@@ -211,7 +219,8 @@ const DeleteSupport = async (id) => {
                             <VTooltip activator="parent" location="top">Chat</VTooltip>
                             <VIcon icon="tabler-message-circle" />
                         </IconBtn>
-                        <IconBtn @click="DeleteSupport(item.id)">
+                        <IconBtn @click="DeleteSupport(item.id)"
+                            v-if='allPermissions["SupportTicket"]?.includes("DeleteSupportTicket")'>
                             <VTooltip activator="parent" location="top">Delete</VTooltip>
                             <VIcon icon="tabler-trash" />
                         </IconBtn>
@@ -235,8 +244,9 @@ const DeleteSupport = async (id) => {
 
 
                                 <VCol cols="12" md="12">
-                                    <AppSelect v-model="status" :items="statuses" prepend-inner-icon="tabler-color-picker"
-                                        label="Status" :rules="[requiredValidator]" />
+                                    <AppSelect v-model="status" :items="statuses"
+                                        prepend-inner-icon="tabler-color-picker" label="Status"
+                                        :rules="[requiredValidator]" />
                                 </VCol>
 
 

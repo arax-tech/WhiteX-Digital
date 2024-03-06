@@ -5,9 +5,11 @@ import { VDataTable } from 'vuetify/labs/VDataTable';
 import { useStore } from 'vuex';
 import Loading from '../../../components/Loading.vue';
 import moment from 'moment';
+import { useRouter } from 'vue-router';
 
 const store = useStore();
 const toast = useToast();
+const router = useRouter();
 
 definePage({ meta: { action: 'read', subject: 'Admins' } })
 onMounted(() => document.title = "Admin - Billing");
@@ -22,7 +24,14 @@ const isDialogVisible = ref(false)
 const plan_id = ref(null)
 
 
-
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["BillingInformation"]?.includes("ReadBillingInformation")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
 
 
 const search = ref('')

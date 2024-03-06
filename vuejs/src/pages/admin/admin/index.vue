@@ -19,7 +19,14 @@ const admins = computed(() => store.state.admins.admins);
 const loading = computed(() => store.state.admins.loading);
 
 
-
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["Admin"]?.includes("ReadAdmin")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
 
 const search = ref('')
 
@@ -70,14 +77,15 @@ const DeleteAdmin = async (id) => {
 <template>
     <VRow>
         <!-- 👉 Admins  -->
-        <Loading v-if="loading"/>
+        <Loading v-if="loading" />
         <VCol v-else cols="12">
             <VCard>
                 <VCardText style="border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity))">
                     <VRow>
                         <VCol cols="8" md="8">
                             <h2>Admins
-                                <VBtn to="/admin/admin/create" rounded="pill" color="primary" size="small" class="ml-5">
+                                <VBtn v-if='allPermissions["Admin"]?.includes("CreateAdmin")' to="/admin/admin/create"
+                                    rounded="pill" color="primary" size="small" class="ml-5">
                                     <VIcon start icon="tabler-plus" />
                                     Create
                                 </VBtn>
@@ -100,11 +108,12 @@ const DeleteAdmin = async (id) => {
 
                         <div class="d-flex align-center">
                             <div>
-                                <VImg rounded :src="item.image?.length > 0 ? item.image : '/placeholder.jpg'" height="40" width="40" />
+                                <VImg rounded :src="item.image?.length > 0 ? item.image : '/placeholder.jpg'"
+                                    height="40" width="40" />
                             </div>
                             <div class="d-flex flex-column ms-3">
                                 <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{ item.name
-                                }}</span>
+                                    }}</span>
                                 <span class="text-xs">{{ item.designation }}</span>
                             </div>
                         </div>
@@ -113,7 +122,7 @@ const DeleteAdmin = async (id) => {
                         <span class="text-xs">{{ item.email }}</span>
                     </template>
                     <template #item.admin.designation="{ item }">
-                        <span class="text-xs">{{ item.designation.length > 0 ? item.designation : 'Client'   }}</span>
+                        <span class="text-xs">{{ item.designation.length > 0 ? item.designation : 'Client' }}</span>
                     </template>
                     <template #item.admin.created_at="{ item }">
                         <span class="text-xs">{{ moment(item?.created_at).format('DD MMM yyyy, hh:mm A') }}</span>
@@ -128,11 +137,12 @@ const DeleteAdmin = async (id) => {
 
                     <!-- Delete -->
                     <template #item.admin.delete="{ item }">
-                        <IconBtn @click="() => router.push('/admin/admin/edit/' + item.id)">
+                        <IconBtn @click="() => router.push('/admin/admin/edit/' + item.id)"
+                            v-if='allPermissions["Admin"]?.includes("UpdateAdmin")'>
                             <VTooltip activator="parent" location="top">Update</VTooltip>
                             <VIcon icon="tabler-edit" />
                         </IconBtn>
-                        <IconBtn @click="DeleteAdmin(item.id)">
+                        <IconBtn @click="DeleteAdmin(item.id)" v-if='allPermissions["Admin"]?.includes("DeleteAdmin")'>
                             <VTooltip activator="parent" location="top">Delete</VTooltip>
                             <VIcon icon="tabler-trash" />
                         </IconBtn>

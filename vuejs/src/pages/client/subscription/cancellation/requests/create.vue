@@ -3,7 +3,6 @@ import { computed, onMounted } from 'vue';
 import { useToast } from 'vue-toast-notification';
 import { useStore } from 'vuex';
 import Loading from '@/components/Loading.vue';
-import moment from 'moment';
 import { useRouter } from 'vue-router';
 const store = useStore();
 const toast = useToast();
@@ -13,6 +12,16 @@ definePage({ meta: { action: 'read', subject: 'Clients' } })
 onMounted(() => document.title = "Client - Create Requests ");
 
 const loading = computed(() => store.state.subscriptionCancellations.loading);
+
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["CancellationRequests"]?.includes("CreateCancellationRequests")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
+
 const refForm = ref()
 const data = ref({
     title : '',

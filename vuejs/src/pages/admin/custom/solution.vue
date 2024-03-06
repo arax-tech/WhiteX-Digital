@@ -23,6 +23,17 @@ const admins = computed(() => store.state.admins.admins);
 const solutions = computed(() => store.state.solutions.data);
 const loading = computed(() => store.state.solutions.loading);
 
+
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["CustomMenu"]?.includes("ReadCustomMenu")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
+
+
 const type = ref('Admin');
 const message = ref({});
 const data = ref({
@@ -40,7 +51,7 @@ const OpenModal = (msg) => {
     EditMenu.value = true;
     message.value = msg;
 
-    
+
     data.value.user_id = msg.user_id;
     data.value.name = msg.name;
     data.value.link = msg.link;
@@ -183,7 +194,8 @@ const types = [
                     <VRow>
                         <VCol cols="8" md="8">
                             <h2>Custom Solution
-                                <VBtn @click="CreateMenu = !CreateMenu" rounded="pill" color="primary" size="small"
+                                <VBtn v-if='allPermissions["CustomMenu"]?.includes("CreateCustomMenu")'
+                                    @click="CreateMenu = !CreateMenu" rounded="pill" color="primary" size="small"
                                     class="ml-5">
                                     <VIcon start icon="tabler-plus" />
                                     Create
@@ -360,12 +372,14 @@ const types = [
                         <VChip v-else-if="item.status === 'Disable'" color="error">Disable</VChip>
                     </template>
 
-                    <template #item.solution.action="{ item }">
+                    <template #item.solution.action="{ item }"
+                        v-if='allPermissions["CustomMenu"]?.includes("UpdateCustomMenu") '>
                         <IconBtn @click="OpenModal(item)">
                             <VTooltip activator="parent" location="top">Update</VTooltip>
                             <VIcon icon="tabler-edit" />
                         </IconBtn>
-                        <IconBtn @click="DeleteMessage(item.id)">
+                        <IconBtn @click="DeleteMessage(item.id)"
+                            v-if='allPermissions["CustomMenu"]?.includes("DeleteCustomMenu")'>
                             <VTooltip activator="parent" location="top">Delete</VTooltip>
                             <VIcon icon="tabler-trash" />
                         </IconBtn>

@@ -10,6 +10,7 @@ import CrmRevenueGrowth from '@/views/dashboards/crm/CrmRevenueGrowth.vue'
 import CrmSalesAreaCharts from '@/views/dashboards/crm/CrmSalesAreaCharts.vue'
 import CrmSessionsBarWithGapCharts from '@/views/dashboards/crm/CrmSessionsBarWithGapCharts.vue'
 
+
 const simpleStatisticsDemoCards = [
     {
         icon: 'tabler-currency-dollar',
@@ -28,6 +29,7 @@ const simpleStatisticsDemoCards = [
         change: '+25.2%',
     },
 ]
+
 
 
 

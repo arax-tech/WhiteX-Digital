@@ -10,10 +10,21 @@ onMounted(() => store.dispatch('GetAuthUser'));
 
 const store = useStore();
 const toast = useToast();
+const router = useRouter();
 
 
 const setting = computed(() => store.state.auth.setting);
 const loading = computed(() => store.state.auth.loading);
+
+
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["Setting"]?.includes("ReadSetting")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
 
 
 const data = ref({

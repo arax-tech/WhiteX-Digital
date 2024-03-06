@@ -4,7 +4,7 @@ import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toast-notification';
 import { useStore } from 'vuex';
-
+import { AdminInitialPermissions } from './Permission';
 const store = useStore();
 const router = useRouter();
 const toast = useToast();
@@ -12,6 +12,15 @@ const toast = useToast();
 definePage({ meta: { action: 'read', subject: 'Admins' } })
 onMounted(() => document.title = "Admin - Create Admin");
 const loading = computed(() => store.state.admins.loading);
+
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["Admin"]?.includes("CreateAdmin")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
 
 const name = ref('')
 const email = ref('')
@@ -21,25 +30,11 @@ const image = ref('')
 const refForm = ref()
 const checkedPermissions = ref({});
 
-const AdminPermissions = {
-    Admin: { permissions: ['CreateAdmin', 'ReadAdmin', 'UpdateAdmin', 'DeleteAdmin'] },
-    Client: { permissions: ['CreateClient', 'ReadClient', 'UpdateClient', 'DeleteClient'] },
-    Subscription: { permissions: ['ReadSubscription', 'UpdateSubscription', 'DeleteSubscription'] },
-    CancellationRequests: { permissions: ['ReadCancellationRequests', 'UpdateCancellationRequests', 'DeleteCancellationRequests'] },
-    BillingInformation: { permissions: ['ReadBillingInformation'] },
-    InvoiceManagement: { permissions: ['CreateInvoiceManagement', 'ReadInvoiceManagement', 'UpdateInvoiceManagement', 'DeleteInvoiceManagement'] },
-    PopUpMessages: { permissions: ['CreatePopUpMessages', 'ReadPopUpMessages', 'UpdatePopUpMessages', 'DeletePopUpMessages'] },
-    LeadTracking: { permissions: ['ReadLeadTracking', 'DeleteLeadTracking'] },
-    SupportTicket: { permissions: ['ReadSupportTicket', 'UpdateSupportTicket', 'DeleteSupportTicket'] },
-    FeedBack: { permissions: ['ReadFeedBack', 'UpdateFeedBack', 'DeleteFeedBack'] },
-    CustomMenu: { permissions: ['CreateCustomMenu', 'ReadCustomMenu', 'UpdateCustomMenu', 'DeleteCustomMenu'] },
-    Setting: { permissions: ['ReadSetting', 'UpdateSetting'] },
-};
 
 
 const CheckAllPermissions = () => {
-    for (const roleName in AdminPermissions) {
-        checkedPermissions.value[roleName] = checkAll.value ? AdminPermissions[roleName].permissions.slice() : [];
+    for (const roleName in AdminInitialPermissions) {
+        checkedPermissions.value[roleName] = checkAll.value ? AdminInitialPermissions[roleName].permissions.slice() : [];
     }
 };
 
@@ -62,6 +57,8 @@ const CreateAdminFunction = async () => {
     if (image.value) {
         formData.append('image', image.value);
     }
+
+
     try {
         const response = await store.dispatch('CreateAdminAction', formData);
         if (response.status === 200) {
@@ -73,7 +70,16 @@ const CreateAdminFunction = async () => {
     }
 };
 
-
+const OnChangePermission = (roleName, permission) => {
+    if (checkedPermissions.value.hasOwnProperty(roleName)) {
+        const index = checkedPermissions.value[roleName].indexOf(permission);
+        if (index !== -1) {
+            checkedPermissions.value[roleName].splice(index, 1);
+        } else {
+            checkedPermissions.value[roleName].push(permission);
+        }
+    }
+}
 const ValidateFunction = () => {
     refForm?.value?.validate().then(({ valid: isValid }) => {
         if (isValid)
@@ -87,7 +93,8 @@ const ValidateFunction = () => {
     <VRow>
         <VCol cols="12">
             <VCard>
-                <VCardText style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+                <VCardText
+                    style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
                     <div>
                         <h2>Create Admin</h2>
                     </div>
@@ -129,8 +136,9 @@ const ValidateFunction = () => {
                             </VCol>
 
                             <VCol cols="12" md="6">
-                                <AppTextField v-model="designation" prepend-inner-icon="tabler-id" placeholder="Designation"
-                                    persistent-placeholder label="Designation" :rules="[requiredValidator]" />
+                                <AppTextField v-model="designation" prepend-inner-icon="tabler-id"
+                                    placeholder="Designation" persistent-placeholder label="Designation"
+                                    :rules="[requiredValidator]" />
                             </VCol>
                             <VCol cols="12" md="6" class="mt-6">
                                 <VFileInput label="Profile Picture" variant="filled"
@@ -158,14 +166,14 @@ const ValidateFunction = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(role, roleName) in AdminPermissions" :key="roleName">
-                                            <td>{{ roleName }}</td>
+                                        <tr v-for="(role, roleName) in AdminInitialPermissions" :key="roleName">
+                                            <td>{{ roleName.replace(/([a-z])([A-Z])/g, '$1 $2') }}</td>
                                             <template v-for="permissionType in ['Create', 'Read', 'Update', 'Delete']">
                                                 <td v-if="role.permissions.includes(permissionType + roleName)">
                                                     <input type="checkbox" :value="permissionType + roleName"
                                                         class="checkbox"
                                                         :checked="checkedPermissions[roleName] && checkedPermissions[roleName].includes(permissionType + roleName)"
-                                                        @change="togglePermission(roleName, permissionType + roleName)" />
+                                                        @change="OnChangePermission(roleName, permissionType + roleName)" />
                                                 </td>
                                                 <template v-else>
                                                     <td></td>

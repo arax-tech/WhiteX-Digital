@@ -10,16 +10,21 @@ const store = useStore();
 const router = useRouter();
 const toast = useToast();
 
-definePage({ meta: { action: 'read', subject: 'Admins' } })
-onMounted(() => document.title = "Admin - Supports");
-onMounted(() => store.dispatch("GetAdmins"));
+definePage({ meta: { action: 'read', subject: 'Clients' } })
+onMounted(() => document.title = "Client - Supports");
 onMounted(() => store.dispatch("GetSupports"));
 
-const admins = computed(() => store.state.admins.admins);
 const supports = computed(() => store.state.supports.data);
 const loading = computed(() => store.state.supports.loading);
 
-
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["SupportTicket"]?.includes("ReadSupportTicket")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
 
 const search = ref('')
 const status = ref('')
@@ -38,10 +43,6 @@ const OpenModal = (sup) => {
 
 // headers
 const headers = [
-    {
-        title: 'Client',
-        key: 'support.client',
-    },
     {
         title: 'Assign To',
         key: 'support.assign_to',
@@ -137,7 +138,14 @@ const DeleteSupport = async (id) => {
                 <VCardText style="border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity))">
                     <VRow>
                         <VCol cols="8" md="8">
-                            <h2>Support Tickets</h2>
+                            <h2>Support Tickets
+                                <VBtn v-if='allPermissions["SupportTicket"]?.includes("CreateSupportTicket") '
+                                    to="/client/support/create" rounded="pill" color="primary" size="small"
+                                    class="ml-5">
+                                    <VIcon start icon="tabler-plus" />
+                                    Create
+                                </VBtn>
+                            </h2>
 
                         </VCol>
                         <VCol cols="4" md="4">
@@ -150,21 +158,7 @@ const DeleteSupport = async (id) => {
                 <!-- 👉 Data Table  -->
                 <VDataTable :headers="headers" :items="supports" :search="search" :items-per-page="5"
                     class="text-no-wrap mb-4">
-                    <template #item.support.client="{ item }">
 
-                        <div class="d-flex align-center">
-                            <div>
-                                <VImg rounded
-                                    :src="item.client?.image?.length > 0 ? item.client?.image : '/placeholder.jpg'"
-                                    height="40" width="40" />
-                            </div>
-                            <div class="d-flex flex-column ms-3">
-                                <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{
-                                    item.client?.name }}</span>
-                                <span class="text-xs">{{ item.client?.designation }}</span>
-                            </div>
-                        </div>
-                    </template>
                     <template #item.support.assign_to="{ item }">
 
                         <div class="d-flex align-center">
@@ -202,16 +196,18 @@ const DeleteSupport = async (id) => {
                         <VChip v-else-if="item.status === 'Closed'" color="error">{{ item.status }}</VChip>
                     </template>
 
-                    <template #item.support.action="{ item }">
-                        <IconBtn @click="OpenModal(item)">
+                    <template #item.support.action="{ item }"
+                        v-if='allPermissions["SupportTicket"]?.includes("UpdateSupportTicket") '>
+                        <IconBtn @click="() => router.push('/client/support/edit/' + item.id)">
                             <VTooltip activator="parent" location="top">Update</VTooltip>
                             <VIcon icon="tabler-edit" />
                         </IconBtn>
-                        <IconBtn @click="() => router.push('/admin/support/chat/' + item.id)">
+                        <IconBtn @click="() => router.push('/client/support/chat/' + item.id)">
                             <VTooltip activator="parent" location="top">Chat</VTooltip>
                             <VIcon icon="tabler-message-circle" />
                         </IconBtn>
-                        <IconBtn @click="DeleteSupport(item.id)">
+                        <IconBtn @click="DeleteSupport(item.id)"
+                            v-if='allPermissions["SupportTicket"]?.includes("DeleteSupportTicket") '>
                             <VTooltip activator="parent" location="top">Delete</VTooltip>
                             <VIcon icon="tabler-trash" />
                         </IconBtn>
@@ -220,35 +216,6 @@ const DeleteSupport = async (id) => {
 
                 </VDataTable>
             </VCard>
-            <VDialog v-if="support" v-model="EditSupport" persistent width="600">
-                <DialogCloseBtn @click="EditSupport = !EditSupport" />
-                <VCard title="Update">
-                    <VDivider class="mt-3" />
-                    <VCardText>
-                        <VForm ref="refForm" @submit.prevent="UpdateValidateFunction">
-                            <VRow>
-                                <VCol cols="12" md="12">
-                                    <AppSelect v-model="assignedTo" :items="admins" item-title="email" item-value="id"
-                                        label="Assign To" prepend-inner-icon="tabler-user" persistent-placeholder
-                                        placeholder="Choose.." />
-                                </VCol>
-
-
-                                <VCol cols="12" md="12">
-                                    <AppSelect v-model="status" :items="statuses" prepend-inner-icon="tabler-color-picker"
-                                        label="Status" :rules="[requiredValidator]" />
-                                </VCol>
-
-
-                                <VCol cols="12">
-                                    <VBtn type="submit" :disabled="loading">{{ loading ? 'Updating...' : 'Update' }}
-                                    </VBtn>
-                                </VCol>
-                            </VRow>
-                        </VForm>
-                    </VCardText>
-                </VCard>
-            </VDialog>
         </VCol>
     </VRow>
 </template>

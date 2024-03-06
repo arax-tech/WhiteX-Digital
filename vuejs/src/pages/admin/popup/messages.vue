@@ -21,6 +21,16 @@ const clients = computed(() => store.state.clients.clients);
 const popupMessages = computed(() => store.state.messages.data);
 const loading = computed(() => store.state.messages.loading);
 
+
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["PopUpMessages"]?.includes("ReadPopUpMessages")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
+
 const message = ref(null);
 const data = ref({
     client_id: '',
@@ -185,8 +195,9 @@ const statuses = [
                     <VRow>
                         <VCol cols="8" md="8">
                             <h2>Popup Messages
-                                <VBtn @click="CreateMessage = !CreateMessage" rounded="pill" color="primary"
-                                    size="small" class="ml-5">
+                                <VBtn v-if='allPermissions["PopUpMessages"]?.includes("CreatePopUpMessages") '
+                                    @click="CreateMessage = !CreateMessage" rounded="pill" color="primary" size="small"
+                                    class="ml-5">
                                     <VIcon start icon="tabler-plus" />
                                     Create
                                 </VBtn>
@@ -362,11 +373,13 @@ const statuses = [
                     </template>
 
                     <template #item.popup.action="{ item }">
-                        <IconBtn @click="OpenModal(item)">
+                        <IconBtn @click="OpenModal(item)"
+                            v-if='allPermissions["PopUpMessages"]?.includes("UpdatePopUpMessages")'>
                             <VTooltip activator="parent" location="top">Update</VTooltip>
                             <VIcon icon="tabler-edit" />
                         </IconBtn>
-                        <IconBtn @click="DeleteMessage(item.id)">
+                        <IconBtn @click="DeleteMessage(item.id)"
+                            v-if='allPermissions["PopUpMessages"]?.includes("DeletePopUpMessages")'>
                             <VTooltip activator="parent" location="top">Delete</VTooltip>
                             <VIcon icon="tabler-trash" />
                         </IconBtn>

@@ -20,7 +20,14 @@ onMounted(() => store.dispatch("GetInvoices"));
 const invoices = computed(() => store.state.invoices.data);
 const loading = computed(() => store.state.invoices.loading);
 
-
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["CustomInvoice"]?.includes("ReadCustomInvoice")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
 
 const search = ref('')
 
@@ -83,7 +90,8 @@ const DeleteInvoice = async (id) => {
                         <VCol cols="8" md="8">
                             <h2>
                                 Invoices
-                                <VBtn to="/admin/invoice/create" rounded="pill" color="primary" size="small" class="ml-5">
+                                <VBtn v-if='allPermissions["CustomInvoice"]?.includes("CreateCustomInvoice") '
+                                    to="/admin/invoice/create" rounded="pill" color="primary" size="small" class="ml-5">
                                     <VIcon start icon="tabler-plus" />
                                     Create
                                 </VBtn>
@@ -104,7 +112,7 @@ const DeleteInvoice = async (id) => {
                     <template #item.invoice.client="{ item }">
                         <span class="text-xs">
                             <b>Name : </b> {{ item?.client?.name }} <br />
-                            <b>Company : </b> {{ item?.client?.company }} <br />
+                            <b>Company : </b> {{ item?.client?.company_name }} <br />
                             <b>Email : </b> {{ item?.client?.email }} <br />
                             <b>Phone : </b> {{ item?.client?.phone }} <br />
 
@@ -112,12 +120,13 @@ const DeleteInvoice = async (id) => {
                     </template>
 
                     <template #item.invoice.products="{ item }">
-                        <span  v-for="(pro, index) in item?.items" :key="index" class="text-xs">
+                        <span v-for="(pro, index) in item?.items" :key="index" class="text-xs">
                             {{ index + 1 }} : {{ pro?.name }}, {{ pro?.qty }} &nbsp;-&nbsp; {{ pro?.price }}<br />
                         </span>
                     </template>
                     <template #item.invoice.status="{ item }">
-                        <span style="padding: 2px 10px;" v-if="item?.status === 'Due'" class="rounded bg-warning">Due</span>
+                        <span style="padding: 2px 10px;" v-if="item?.status === 'Due'"
+                            class="rounded bg-warning">Due</span>
                         <span style="padding: 2px 10px;" v-else-if="item?.status === 'Paid'"
                             class="rounded bg-success">Paid</span>
                         <span style="padding: 2px 10px; background-color: #c72c2c; color: #fff;"
@@ -131,11 +140,13 @@ const DeleteInvoice = async (id) => {
                         <span class="text-xs">{{ item?.total }}</span>
                     </template>
                     <template #item.invoice.action="{ item }">
-                        <IconBtn @click="() => router.push(`/invoice/print/${item?.id}`)">
+                        <IconBtn @click="() => router.push(`/invoice/print/${item?.id}`)"
+                            v-if='allPermissions["CustomInvoice"]?.includes("ReadCustomInvoice") '>
                             <VTooltip activator="parent" location="top">View</VTooltip>
                             <VIcon icon="tabler-eye" />
                         </IconBtn>
-                        <IconBtn @click="DeleteInvoice(item.id)">
+                        <IconBtn @click="DeleteInvoice(item.id)"
+                            v-if='allPermissions["CustomInvoice"]?.includes("DeleteCustomInvoice") '>
                             <VTooltip activator="parent" location="top">Delete</VTooltip>
                             <VIcon icon="tabler-trash" />
                         </IconBtn>

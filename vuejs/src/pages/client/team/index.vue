@@ -21,7 +21,14 @@ onMounted(() => store.dispatch("GetTeams"));
 const teams = computed(() => store.state.teams.data);
 const loading = computed(() => store.state.teams.loading);
 
-
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["Teams"]?.includes("ReadTeams")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
 
 
 
@@ -86,8 +93,8 @@ const DeleteTeam = async (id) => {
                     <VRow>
                         <VCol cols="8" md="8">
                             <h2>Teams
-                                <VBtn to="/client/team/create" rounded="pill" color="primary" size="small"
-                                    class="ml-5">
+                                <VBtn v-if='allPermissions["Teams"]?.includes("CreateTeams")' to="/client/team/create"
+                                    rounded="pill" color="primary" size="small" class="ml-5">
                                     <VIcon start icon="tabler-plus" />
                                     Create
                                 </VBtn>
@@ -142,12 +149,12 @@ const DeleteTeam = async (id) => {
 
 
                     <!-- Delete -->
-                    <template #item.team.delete="{ item }">
+                    <template #item.team.delete="{ item }" v-if='allPermissions["Teams"]?.includes("UpdateTeams")'>
                         <IconBtn @click="() => router.push('/client/team/edit/' + item.id)">
                             <VTooltip activator="parent" location="top">Update</VTooltip>
                             <VIcon icon="tabler-edit" />
                         </IconBtn>
-                        <IconBtn @click="DeleteTeam(item.id)">
+                        <IconBtn @click="DeleteTeam(item.id)" v-if='allPermissions["Teams"]?.includes("DeleteTeams")'>
                             <VTooltip activator="parent" location="top">Delete</VTooltip>
                             <VIcon icon="tabler-trash" />
                         </IconBtn>

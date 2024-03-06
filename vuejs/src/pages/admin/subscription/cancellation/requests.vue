@@ -7,6 +7,7 @@ import Loading from '../../../../components/Loading.vue';
 import moment from 'moment';
 
 const store = useStore();
+const router = useRouter();
 const toast = useToast();
 
 definePage({ meta: { action: 'read', subject: 'Admins' } })
@@ -15,6 +16,15 @@ onMounted(() => store.dispatch("GetSubscriptionCancellations"));
 
 const cancellations = computed(() => store.state.subscriptionCancellations.cancellations);
 const loading = computed(() => store.state.subscriptionCancellations.loading);
+
+const user = computed(() => store.state.auth.user);
+const allPermissions = JSON.parse(user.value.permissions);
+onMounted(() => {
+    if (!allPermissions["CancellationRequests"]?.includes("ReadCancellationRequests")) {
+        alert("You don't have permission to access this resource...");
+        router.go(-1);
+    }
+});
 
 
 const search = ref('')
@@ -130,7 +140,7 @@ const statuses = [
                             </div>
                             <div class="d-flex flex-column ms-3">
                                 <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{
-            item.user_name }}</span>
+                                    item.user_name }}</span>
                             </div>
                         </div>
                     </template>
@@ -161,11 +171,13 @@ const statuses = [
                     <!-- Delete -->
 
                     <template #item.subscription.action="{ item }">
-                        <IconBtn @click="OpenModal(item)">
+                        <IconBtn @click="OpenModal(item)"
+                            v-if='allPermissions["CancellationRequests"]?.includes("UpdateCancellationRequests") '>
                             <VTooltip activator="parent" location="top">Update</VTooltip>
                             <VIcon icon="tabler-edit" />
                         </IconBtn>
-                        <IconBtn @click="DeleteSubCancellations(item.id)">
+                        <IconBtn @click="DeleteSubCancellations(item.id)"
+                            v-if='allPermissions["CancellationRequests"]?.includes("DeleteCancellationRequests") '>
                             <VTooltip activator="parent" location="top">Delete</VTooltip>
                             <VIcon icon="tabler-trash" />
                         </IconBtn>
