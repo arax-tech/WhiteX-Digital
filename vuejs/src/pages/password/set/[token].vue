@@ -4,14 +4,58 @@ import authV2ResetPasswordIllustrationDark from '@images/pages/auth-v2-reset-pas
 import authV2ResetPasswordIllustrationLight from '@images/pages/auth-v2-reset-password-illustration-light.png'
 import authV2MaskDark from '@images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@images/pages/misc-mask-light.png'
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useToast } from 'vue-toast-notification'
+import { useStore } from 'vuex'
 
 definePage({ meta: { layout: 'blank', unauthenticatedOnly: true, } })
 onMounted(() => document.title = "Create New Password");
-const form = ref({
+const loading = computed(() => store.state.password.loading);
+
+
+const route = useRoute();
+const router = useRouter();
+const toast = useToast();
+const store = useStore();
+
+const data = ref({
     newPassword: '',
     confirmPassword: '',
 })
+const refForm = ref()
+
+
+
+const ValidateFunction = () => {
+    refForm?.value?.validate().then(({ valid: isValid }) => {
+        if (isValid)
+            SetPasswordFunction()
+    })
+
+}
+
+const SetPasswordFunction = async () => {
+    const newPassword = data.value.newPassword;
+    const confirmPassword = data.value.confirmPassword;
+
+    if (newPassword !== confirmPassword) {
+        toast.error('Password Confirmation does not match...');
+    } else {
+        try {
+            const response = await store.dispatch('ResetPasswordAction', { reset_token: route.params.token, password: newPassword });
+            if (response.status === 200) {
+                toast.success(response.message);
+                router.push('/login');
+            }
+            if (response.status === 422) {
+                toast.error(response.message);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+}
 
 const authThemeImg = useGenerateImageVariant(authV2ResetPasswordIllustrationLight, authV2ResetPasswordIllustrationDark)
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
@@ -39,28 +83,30 @@ const isConfirmPasswordVisible = ref(false)
                 </VCardText>
 
                 <VCardText>
-                    <VForm @submit.prevent="() => { }">
+                    <VForm class="mt-6" ref="refForm" @submit.prevent="ValidateFunction">
                         <VRow>
                             <!-- password -->
                             <VCol cols="12">
-                                <AppTextField v-model="form.newPassword" autofocus label="New Password"
+                                <AppTextField v-model="data.newPassword" autofocus label="New Password"
                                     placeholder="············" :type="isPasswordVisible ? 'text' : 'password'"
                                     :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
-                                    @click:append-inner="isPasswordVisible = !isPasswordVisible" />
+                                    @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                                    :rules="[requiredValidator]" />
                             </VCol>
 
                             <!-- Confirm Password -->
                             <VCol cols="12">
-                                <AppTextField v-model="form.confirmPassword" label="Confirm Password"
+                                <AppTextField v-model="data.confirmPassword" label="Confirm Password"
                                     placeholder="············" :type="isConfirmPasswordVisible ? 'text' : 'password'"
                                     :append-inner-icon="isConfirmPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
-                                    @click:append-inner="isConfirmPasswordVisible = !isConfirmPasswordVisible" />
+                                    @click:append-inner="isConfirmPasswordVisible = !isConfirmPasswordVisible"
+                                    :rules="[requiredValidator]" />
                             </VCol>
 
                             <!-- Set password -->
                             <VCol cols="12">
-                                <VBtn block type="submit">
-                                    Set New Password
+                                <VBtn block type="submit" :disabled="loading">
+                                    {{ loading ? 'Loading...' : 'Set New Password' }}
                                 </VBtn>
                             </VCol>
 

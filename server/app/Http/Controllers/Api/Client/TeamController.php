@@ -15,7 +15,7 @@ class TeamController extends Controller
 
     public function index(Request $request)
     {
-    	$teams = User::where('role', 'Team')->get();
+    	$teams = User::where(['customer_id' => auth::user()->id, 'role' => 'Team'])->get();
 		return response()->json([
 		   'status' => 200,
 		   'teams' => $teams,
@@ -35,10 +35,12 @@ class TeamController extends Controller
 	    if ($check < 1) {
 	    	error_reporting(0);
 			$team = new User();
+			$team->customer_id = auth::user()->id;
 			$team->name = $request->name;
 			$team->email = $request->email;
 			$team->role = $request->role;
 			$team->designation = $request->designation;
+			$team->phone = $request->phone;
 			$team->password = Hash::make($request->password);
 
 			if ($request->hasFile('image')){

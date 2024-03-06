@@ -1,4 +1,5 @@
 export default [
+  { heading: "Main" },
   {
     title: "Dashboard",
     icon: { icon: "tabler-smart-home" },
@@ -34,9 +35,14 @@ export default [
     to: 'apps-chat',
   },
   {
-    title: 'SMS',
-    icon: { icon: 'tabler-message-circle' },
-    to: 'admin-campaign-sms',
+    title: "Campaigns",
+    icon: { icon: "tabler-send" },
+    children: [
+      { title: "Campaign", to: "admin-campaign" },
+      { title: "SMS", to: "admin-campaign-sms" },
+      { title: "Email", to: "admin-campaign-email" },
+      { title: "APIs Config", to: "admin-campaign-config" },
+    ],
   },
   {
     title: "Billing Information",
@@ -47,26 +53,11 @@ export default [
     title: "Invoice Management",
     icon: { icon: "tabler-printer" },
     children: [
-      { title: "WooCommerce", to: "charts-apex-chart" },
-      { title: "Custom", to: "charts-chartjs" },
+      { title: "WooCommerce", to: "admin-invoice-woocommerce" },
+      { title: "Custom", to: "admin-invoice" },
     ],
   },
-  { heading: "Settings" },
-  {
-    title: "Profile",
-    icon: { icon: "tabler-user" },
-    to: "admin-profile",
-  },
-  {
-    title: "Setting",
-    icon: { icon: "tabler-settings" },
-    to: "admin-setting",
-  },
-  {
-    title: "Update Password",
-    icon: { icon: "tabler-lock" },
-    to: "admin-password",
-  },
+
   // {
   //   title: "Logout",
   //   icon: { icon: "tabler-logout" },
@@ -76,26 +67,31 @@ export default [
   {
     title: "Pop-up Messages",
     icon: { icon: "tabler-message-circle" },
-    to: "admin-client",
+    to: "admin-popup-messages",
   },
   {
     title: "Lead Tracking",
     icon: { icon: "tabler-color-swatch" },
-    to: "admin-client",
+    to: "admin-lead",
   },
   {
     title: "Support Ticket",
     icon: { icon: "tabler-help-circle" },
-    to: "admin-client",
+    to: "admin-support",
   },
   {
     title: "Feedback",
     icon: { icon: "tabler-star" },
-    to: "admin-client",
+    to: "admin-feedback",
   },
   {
     title: "Custom Menu",
     icon: { icon: "tabler-list" },
-    to: "admin-client",
+    to: "admin-custom-solution",
+  },
+  {
+    title: "Setting",
+    icon: { icon: "tabler-settings" },
+    to: "admin-setting",
   },
 ];

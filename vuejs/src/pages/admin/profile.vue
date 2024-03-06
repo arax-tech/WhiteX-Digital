@@ -41,9 +41,19 @@ const changeAvatar = file => {
     }
 };
 
-const resetAvatar = () => {
-    accountDataLocal.value.avatarImg = accountData.avatarImg;
-};
+
+
+
+const refForm = ref()
+const ValidateFunction = (event) => {
+    event.preventDefault();
+    refForm?.value?.validate().then(({ valid: isValid }) => {
+        if (isValid)
+            UpdateProfileFunction();
+    })
+}
+
+
 
 const UpdateProfileFunction = async () => {
     const formData = new FormData();
@@ -70,10 +80,11 @@ const UpdateProfileFunction = async () => {
         <VCol cols="12">
             <VCard title="Profile Details">
 
-                <form enctype="multipart/form-data" @submit.prevent="UpdateProfileFunction">
+                <VForm ref="refForm" @submit.prevent="ValidateFunction">
                     <VCardText class="d-flex">
                         <!-- 👉 Avatar -->
-                        <VAvatar rounded size="100" class="me-6" :image="accountDataLocal.avatarImg?.length > 0 ? accountDataLocal.avatarImg : '/placeholder.jpg'" />
+                        <VAvatar rounded size="100" class="me-6"
+                            :image="accountDataLocal.avatarImg?.length > 0 ? accountDataLocal.avatarImg : '/placeholder.jpg'" />
 
                         <!-- 👉 Upload Photo -->
                         <div class="d-flex flex-column justify-center gap-4">
@@ -86,10 +97,7 @@ const UpdateProfileFunction = async () => {
                                 <input ref="refInputEl" type="file" name="image" accept=".jpeg,.png,.jpg,GIF" hidden
                                     @input="changeAvatar">
 
-                                <VBtn type="reset" color="secondary" variant="tonal" @click="resetAvatar">
-                                    <span class="d-none d-sm-block">Reset</span>
-                                    <VIcon icon="tabler-refresh" class="d-sm-none" />
-                                </VBtn>
+
                             </div>
 
                             <p class="text-body-1 mb-0">
@@ -108,12 +116,12 @@ const UpdateProfileFunction = async () => {
                             <!-- 👉 Name -->
                             <VCol md="6" cols="12">
                                 <AppTextField prepend-inner-icon="tabler-user" placeholder="Name" name="name"
-                                    v-model="data.name" persistent-placeholder label="Name" />
+                                    v-model="data.name" persistent-placeholder label="Name" :rules="[requiredValidator]"  />
                             </VCol>
                             <!-- 👉 Email -->
                             <VCol md="6" cols="12">
                                 <AppTextField prepend-inner-icon="tabler-mail" placeholder="Email" name="email"
-                                    v-model="data.email" persistent-placeholder label="Email" />
+                                    v-model="data.email" persistent-placeholder label="Email" :rules="[requiredValidator]"  />
                             </VCol>
 
 
@@ -125,7 +133,7 @@ const UpdateProfileFunction = async () => {
 
                     </VCardText>
 
-                </form>
+                </VForm>
             </VCard>
         </VCol>
     </VRow>

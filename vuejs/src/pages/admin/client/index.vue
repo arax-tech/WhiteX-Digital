@@ -17,6 +17,7 @@ import Loading from '../../../components/Loading.vue'
 definePage({ meta: { action: 'read', subject: 'Admins' } })
 onMounted(() => document.title = "Admin - Clients");
 onMounted(() => store.dispatch("GetClients"));
+
 const clients = computed(() => store.state.clients.clients);
 const loading = computed(() => store.state.clients.loading);
 

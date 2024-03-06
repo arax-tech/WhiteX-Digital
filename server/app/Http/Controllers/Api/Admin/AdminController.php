@@ -31,27 +31,40 @@ class AdminController extends Controller
     }
     public function update_profile(Request $request)
     {
-    	error_reporting(0);
-		// return $request->all();
-		$admin = User::find(auth::user()->id);
-		$admin->name = $request->name;
-		$admin->email = $request->email;
+        error_reporting(0);
+        // return $request->all();
+        $admin = User::find(auth::user()->id);
+        $admin->name = $request->name;
+        $admin->email = $request->email;
 
-		if ($request->hasFile('image')){
-			if ($admin->image && file_exists(public_path('assets/admin/profile/').$admin->image)) {
+        if ($request->hasFile('image')){
+            if ($admin->image && file_exists(public_path('assets/admin/profile/').$admin->image)) {
                 unlink(public_path('assets/admin/profile/').$admin->image);
             }
-		    $file1 = 'admin-'.time().'.'.$request->image->extension();
-		    $request->image->storeAs('/admin/profile/', $file1, 'my_files');
-		    $admin->image = URL::to('').'/assets/admin/profile/'.$file1;
-		}else{
-		    $admin->image = $admin->image;
-		}
-		$admin->save();
+            $file1 = 'admin-'.time().'.'.$request->image->extension();
+            $request->image->storeAs('/admin/profile/', $file1, 'my_files');
+            $admin->image = URL::to('').'/assets/admin/profile/'.$file1;
+        }else{
+            $admin->image = $admin->image;
+        }
+        $admin->save();
+        return response()->json([
+           'status' => 200,
+           'message' => 'Profile Updated Successfuly...',
+           'user' => Auth::user(),
+        ], 200);
+    }
+
+    public function remove_notification(Request $request, $entry_id)
+    {
+    	error_reporting(0);
+        $lead = Lead::where('entry_id',$entry_id)->first();
+		// return $lead;
+		$lead->notification = 0;
+		$lead->update();
 		return response()->json([
 		   'status' => 200,
-		   'message' => 'Profile Updated Successfuly...',
-		   'user' => Auth::user(),
+		   'message' => 'Notification Remove Successfuly...',
 		], 200);
     }
 

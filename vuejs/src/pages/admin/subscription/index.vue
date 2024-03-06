@@ -25,6 +25,7 @@ const plan_id = ref(null)
 
 
 
+
 const search = ref('')
 
 // headers
@@ -67,6 +68,7 @@ const subscription = ref(null)
 const OpenModal = (subs) => {
     isDialogVisible.value = true;
     subscription.value = subs;
+    plan_id.value = subs?.line_items[0]?.name;
 };
 
 
@@ -99,9 +101,7 @@ const currentTab = ref('Tab1')
 
 <template>
     <VRow>
-        <!-- 👉 Admins  -->
-       
-        <Loading v-if="loading"/>
+        <Loading v-if="loading" />
         <VCol v-else cols="12">
             <VCard>
                 <VCardText style="border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity))">
@@ -122,7 +122,7 @@ const currentTab = ref('Tab1')
                     <!-- product -->
                     <template #item.subscription.subscription="{ item }">
                         <span class="text-xs">{{ item?.id }} for {{ `${item?.user?.first_name} ${item?.user?.last_name}`
-                        }}</span>
+                            }}</span>
                     </template>
                     <template #item.subscription.items="{ item }">
                         <span class="text-xs">{{ item?.line_items[0]?.name }}</span>
@@ -131,29 +131,26 @@ const currentTab = ref('Tab1')
                         <span class="text-xs">{{ item?.line_items[0]?.subtotal }} / {{ item?.billing_period }}</span>
                     </template>
                     <template #item.subscription.start_date="{ item }">
-                        <span class="text-xs">{{ item?.start_date_gmt ? moment(item?.start_date_gmt).format('DD MMM yyyy') :
-                            '-' }}</span>
+                        <span class="text-xs">
+                            {{ item?.start_date_gmt ? moment(item?.start_date_gmt).format('DD MMM yyyy') : '-' }}
+                        </span>
                     </template>
                     <template #item.subscription.next_payment="{ item }">
-                        <span class="text-xs">{{ item?.end_date_gmt ? moment(item?.end_date_gmt).format('DD MMM yyyy') : '-'
-                        }}</span>
+                        <span class="text-xs">{{ item?.end_date_gmt ? moment(item?.end_date_gmt).format('DD MMM yyyy') :
+                            '-'
+                            }}</span>
                     </template>
                     <template #item.subscription.end_date="{ item }">
-                        <span class="text-xs">{{ item?.end_date_gmt ? moment(item?.end_date_gmt).format('DD MMM yyyy') : '-'
-                        }}</span>
+                        <span class="text-xs">{{ item?.end_date_gmt ? moment(item?.end_date_gmt).format('DD MMM yyyy') :
+                            '-'
+                            }}</span>
                     </template>
                     <template #item.subscription.status="{ item }">
-                        <span style="padding: 2px 10px;" v-if="item.status === 'pending-cancel'"
-                            class=" rounded bg-secondary">Pending Cancel</span>
-                        <span style="padding: 2px 10px;" v-else-if="item.status === 'expired'"
-                            class=" rounded bg-info">Expired</span>
-                        <span style="padding: 2px 10px;" v-else-if="item.status === 'on-hold'"
-                            class=" rounded bg-warning">On Hold</span>
-                        <span style="padding: 2px 10px;" v-else-if="item.status === 'active'"
-                            class=" rounded bg-success">Active</span>
-                        <span style="padding: 2px 10px; background-color: #c72c2c; color: #fff;"
-                            v-else-if="item.status === 'cancelled'" class=" rounded bg-red">Cancelled</span>
-
+                        <VChip v-if="item.status === 'pending-cancel'" color="secondary">Pending Cancel</VChip>
+                        <VChip v-else-if="item.status === 'expired'" color="info">Expired</VChip>
+                        <VChip v-else-if="item.status === 'on-hold'" color="warning">On Hold</VChip>
+                        <VChip v-else-if="item.status === 'active'" color="success">Active</VChip>
+                        <VChip v-else-if="item.status === 'cancelled'" color="error">Cancelled</VChip>
                     </template>
 
 
@@ -165,7 +162,8 @@ const currentTab = ref('Tab1')
                             <VTooltip activator="parent" location="top">View Subscription Details</VTooltip>
                             <VIcon icon="tabler-eye" />
                         </IconBtn>
-                        <IconBtn @click="navigateToExternalUrl('https://whitexdigital.com/product/' + (item?.line_items[0]?.product_id))">
+                        <IconBtn
+                            @click="navigateToExternalUrl('https://whitexdigital.com/product/' + (item?.line_items[0]?.product_id))">
                             <VTooltip activator="parent" location="top">View Package</VTooltip>
                             <VIcon icon="tabler-id" />
                         </IconBtn>
@@ -195,41 +193,50 @@ const currentTab = ref('Tab1')
                                                             class="text-h6 text-overline mb-1 font-weight-bolder">Subscription</label><br />
                                                         <label class="mb-1">#{{ subscription?.id }} for {{
                                                             `${subscription?.user?.first_name}
-                                                                                                                    ${subscription?.user?.last_name}` }}</label>
+                                                            ${subscription?.user?.last_name}` }}</label>
                                                     </VCol>
                                                     <VCol cols="4">
-                                                        <label class="text-h6 text-overline mb-1 font-weight-bolder">Item
+                                                        <label
+                                                            class="text-h6 text-overline mb-1 font-weight-bolder">Item
                                                         </label><br />
-                                                        <label class="mb-1">{{ subscription?.line_items[0]?.name }}</label>
+                                                        <label class="mb-1">{{ subscription?.line_items[0]?.name
+                                                            }}</label>
                                                     </VCol>
                                                     <VCol cols="4">
-                                                        <label class="text-h6 text-overline mb-1 font-weight-bolder">Total
+                                                        <label
+                                                            class="text-h6 text-overline mb-1 font-weight-bolder">Total
                                                         </label><br />
-                                                        <label class="mb-1">{{ subscription?.line_items[0]?.subtotal }} / {{
+                                                        <label class="mb-1">{{ subscription?.line_items[0]?.subtotal }}
+                                                            / {{
                                                             subscription?.billing_period }}</label>
                                                     </VCol>
                                                 </VRow>
                                                 <VRow>
                                                     <VCol cols="4">
-                                                        <label class="text-h6 text-overline mb-1 font-weight-bolder">Start
+                                                        <label
+                                                            class="text-h6 text-overline mb-1 font-weight-bolder">Start
                                                             Date</label><br />
                                                         <label class="mb-1">{{ subscription?.start_date_gmt ?
-                                                            moment(subscription?.start_date_gmt).format('DD MMM yyyy') : '-'
-                                                        }}</label>
+                                                            moment(subscription?.start_date_gmt).format('DD MMM yyyy') :
+                                                            '-'
+                                                            }}</label>
                                                     </VCol>
                                                     <VCol cols="4">
-                                                        <label class="text-h6 text-overline mb-1 font-weight-bolder">Next
+                                                        <label
+                                                            class="text-h6 text-overline mb-1 font-weight-bolder">Next
                                                             Payment </label><br />
                                                         <label class="mb-1">{{ subscription?.end_date_gmt ?
-                                                            moment(subscription?.end_date_gmt).format('DD MMM yyyy') : '-'
-                                                        }}</label>
+                                                            moment(subscription?.end_date_gmt).format('DD MMM yyyy') :
+                                                            '-'
+                                                            }}</label>
                                                     </VCol>
                                                     <VCol cols="4">
                                                         <label class="text-h6 text-overline mb-1 font-weight-bolder">End
                                                             Date </label><br />
                                                         <label class="mb-1">{{ subscription?.end_date_gmt ?
-                                                            moment(subscription?.end_date_gmt).format('DD MMM yyyy') : '-'
-                                                        }}</label>
+                                                            moment(subscription?.end_date_gmt).format('DD MMM yyyy') :
+                                                            '-'
+                                                            }}</label>
                                                     </VCol>
                                                 </VRow>
                                                 <VRow>
@@ -258,84 +265,102 @@ const currentTab = ref('Tab1')
                                             <VWindowItem value="Tab2">
                                                 <VRow>
                                                     <VCol cols="4">
-                                                        <label class="text-h6 text-overline mb-1 font-weight-bolder">Full
+                                                        <label
+                                                            class="text-h6 text-overline mb-1 font-weight-bolder">Full
                                                             Name</label><br />
                                                         <label class="mb-1">{{ subscription?.billing?.first_name }} {{
                                                             subscription?.billing?.last_name }}</label>
                                                     </VCol>
                                                     <VCol cols="4">
-                                                        <label class="text-h6 text-overline mb-1 font-weight-bolder">Company
+                                                        <label
+                                                            class="text-h6 text-overline mb-1 font-weight-bolder">Company
                                                         </label><br />
                                                         <label class="mb-1">{{ subscription?.billing?.company }}</label>
                                                     </VCol>
                                                     <VCol cols="4">
-                                                        <label class="text-h6 text-overline mb-1 font-weight-bolder">Email
+                                                        <label
+                                                            class="text-h6 text-overline mb-1 font-weight-bolder">Email
                                                         </label><br />
                                                         <label class="mb-1">{{ subscription?.billing?.email }}</label>
                                                     </VCol>
                                                 </VRow>
                                                 <VRow>
                                                     <VCol cols="4">
-                                                        <label class="text-h6 text-overline mb-1 font-weight-bolder">Phone
+                                                        <label
+                                                            class="text-h6 text-overline mb-1 font-weight-bolder">Phone
                                                         </label><br />
                                                         <label class="mb-1">{{ subscription?.billing?.phone }}</label>
                                                     </VCol>
                                                     <VCol cols="4">
-                                                        <label class="text-h6 text-overline mb-1 font-weight-bolder">City
+                                                        <label
+                                                            class="text-h6 text-overline mb-1 font-weight-bolder">City
                                                         </label><br />
                                                         <label class="mb-1">{{ subscription?.billing?.city }}</label>
                                                     </VCol>
                                                     <VCol cols="4">
-                                                        <label class="text-h6 text-overline mb-1 font-weight-bolder">State
+                                                        <label
+                                                            class="text-h6 text-overline mb-1 font-weight-bolder">State
                                                         </label><br />
                                                         <label class="mb-1">{{ subscription?.billing?.state }}</label>
                                                     </VCol>
                                                 </VRow>
                                                 <VRow>
                                                     <VCol cols="4">
-                                                        <label class="text-h6 text-overline mb-1 font-weight-bolder">Country
+                                                        <label
+                                                            class="text-h6 text-overline mb-1 font-weight-bolder">Country
                                                         </label><br />
                                                         <label class="mb-1">{{ subscription?.billing?.country }}</label>
                                                     </VCol>
                                                     <VCol cols="4">
-                                                    <label class="text-h6 text-overline mb-1 font-weight-bolder">Post
-                                                        Code </label><br />
-                                                    <label class="mb-1">{{subscription?.billing?.postcode}}</label>
-                                                </VCol>
-                                                <VCol cols="4">
-                                                    <label class="text-h6 text-overline mb-1 font-weight-bolder">Full
-                                                        Address </label><br />
-                                                    <label class="mb-1">{{ subscription?.billing?.address_1 }}, {{
-                                                        subscription?.billing?.address_2 }}</label>
-                                                </VCol>
-                                            </VRow>
-                                        </VWindowItem>
-                                        <VWindowItem value="Tab3">
-                                            <form @submit.prevent="UpdatedSubscriptionFunction" class="p-2">
-                                                <label class="form-label">Select Plan</label>
-                                                <select class="form-control mb-2" v-model="plan_id">
-                                                    <option v-for="(plan, index) in plans" :key="index"
-                                                        :value="plan.id">
-                                                        {{ plan.name }}
-                                                    </option>
-                                                </select>
-                                                <VBtn type="submit" :disabled="loading">{{ loading ? 'Updating...' :
-                                                    'Update' }}</VBtn>
-                                            </form>
+                                                        <label
+                                                            class="text-h6 text-overline mb-1 font-weight-bolder">Post
+                                                            Code </label><br />
+                                                        <label class="mb-1">{{ subscription?.billing?.postcode
+                                                            }}</label>
+                                                    </VCol>
+                                                    <VCol cols="4">
+                                                        <label
+                                                            class="text-h6 text-overline mb-1 font-weight-bolder">Full
+                                                            Address </label><br />
+                                                        <label class="mb-1">{{ subscription?.billing?.address_1 }}, {{
+                                                            subscription?.billing?.address_2 }}</label>
+                                                    </VCol>
+                                                </VRow>
+                                            </VWindowItem>
+                                            <VWindowItem value="Tab3">
+                                                <VForm @submit.prevent="UpdatedSubscriptionFunction" class="p-2">
 
-                                        </VWindowItem>
-                                    </VWindow>
-                                </VCardText>
+                                                    <AppSelect v-model="plan_id" :items="plans" item-title="name"
+                                                        item-value="id" label="Select Plan"
+                                                        prepend-inner-icon="tabler-color-picker"
+                                                        persistent-placeholder placeholder="Choose.." />
+
+                                                    <br>
+
+                                                    <!-- // <label class="form-label">Select Plan</label>
+                                                    // <select class="form-control mb-2" v-model="plan_id">
+                                                        // <option v-for="(plan, index) in plans" :key="index" //
+                                                            :value="plan.id">
+                                                            // {{ plan.name }}
+                                                            // </option>
+                                                        // </select> -->
+                                                    <VBtn type="submit" :disabled="loading">{{ loading ? 'Updating...' :
+                                                        'Update' }}</VBtn>
+                                                </VForm>
+
+                                            </VWindowItem>
+                                        </VWindow>
+                                    </VCardText>
 
 
-                            </div>
-                        </VCard>
-                    </VDialog>
-                </template>
-            </VDataTable>
-        </VCard>
-    </VCol>
-</VRow>
+                                </div>
+                            </VCard>
+                        </VDialog>
+                    </template>
+                </VDataTable>
+            </VCard>
+        </VCol>
+    </VRow>
 </template>
 
 

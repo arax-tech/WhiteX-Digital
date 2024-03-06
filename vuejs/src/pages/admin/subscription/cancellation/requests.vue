@@ -83,7 +83,7 @@ const UpdatedSubscriptionCancellationFunction = async () => {
     const formData = new FormData();
     formData.append('status', status.value);
     try {
-        const response = await store.dispatch('UpdateSubscriptionCancellation', { id : cancellation.value.id, formData });
+        const response = await store.dispatch('UpdateSubscriptionCancellation', { id: cancellation.value.id, formData });
         if (response.status === 200) {
             toast.success(response.message);
             CloseModal();
@@ -94,11 +94,16 @@ const UpdatedSubscriptionCancellationFunction = async () => {
     }
 }
 
+const statuses = [
+    'Pending',
+    'Approved',
+    'Cancelled',
+]
 </script>
 
 <template>
     <VRow>
-        <Loading v-if="loading"/>
+        <Loading v-if="loading" />
         <VCol v-else cols="12">
             <VCard>
                 <VCardText style="border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity))">
@@ -119,26 +124,34 @@ const UpdatedSubscriptionCancellationFunction = async () => {
                     <!-- product -->
                     <template #item.subscription.client="{ item }">
                         <div class="d-flex align-center">
-                                <div>
-                                    <VImg rounded :src="item.user_image?.length > 0 ? item.user_image : '/placeholder.jpg'" height="40" width="40" />
-                                </div>
-                                <div class="d-flex flex-column ms-3">
-                                    <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{ item.user_name}}</span>
-                                </div>
+                            <div>
+                                <VImg rounded :src="item.user_image?.length > 0 ? item.user_image : '/placeholder.jpg'"
+                                    height="40" width="40" />
                             </div>
+                            <div class="d-flex flex-column ms-3">
+                                <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{
+            item.user_name }}</span>
+                            </div>
+                        </div>
                     </template>
+
                     <template #item.subscription.title="{ item }">
                         <span class="text-xs">{{ item?.title }}</span>
                     </template>
+
                     <template #item.subscription.description="{ item }">
                         <span class="text-xs">{{ item?.description }}</span>
                     </template>
-                    
+
                     <template #item.subscription.status="{ item }">
-                        <span  style="padding: 2px 10px;" v-if="item?.status === 'Pending'" class="rounded bg-primary mr-1">Pending</span>
-                        <span  style="padding: 2px 10px;" v-else-if="item?.status === 'Approved'" class="rounded bg-success mr-1">Approved</span>
-                        <span  style="padding: 2px 10px;  background-color: #c72c2c; color: #fff;" v-else-if="item?.status === 'Cancelled'" class="rounded bg-danger mr-1">Cancelled</span>
+                        <span style="padding: 2px 10px;" v-if="item?.status === 'Pending'"
+                            class="rounded bg-primary mr-1">Pending</span>
+                        <span style="padding: 2px 10px;" v-else-if="item?.status === 'Approved'"
+                            class="rounded bg-success mr-1">Approved</span>
+                        <span style="padding: 2px 10px;  background-color: #c72c2c; color: #fff;"
+                            v-else-if="item?.status === 'Cancelled'" class="rounded bg-danger mr-1">Cancelled</span>
                     </template>
+
                     <template #item.subscription.date="{ item }">
                         <span class="text-xs">{{ moment(item?.created_at).format('DD MMM yyyy, hh:mm A') }}</span>
                     </template>
@@ -146,6 +159,7 @@ const UpdatedSubscriptionCancellationFunction = async () => {
 
 
                     <!-- Delete -->
+
                     <template #item.subscription.action="{ item }">
                         <IconBtn @click="OpenModal(item)">
                             <VTooltip activator="parent" location="top">Update</VTooltip>
@@ -159,35 +173,34 @@ const UpdatedSubscriptionCancellationFunction = async () => {
                         <VDialog v-if="cancellation" v-model="isDialogVisible" width="600">
 
 
-                                <!-- Dialog close btn -->
-                                <DialogCloseBtn @click="CloseModal" />
+                            <!-- Dialog close btn -->
+                            <DialogCloseBtn @click="CloseModal" />
 
-                                <!-- Dialog Content -->
-                                <VCard title="Update Subscription Cancellation">
-                                    
-
-                                    <VCardText>
-                                        <form @submit.prevent="UpdatedSubscriptionCancellationFunction" class="p-2">
-                                            <label class="form-label">Select Status</label>
-                                            <select class="form-control mb-2" v-model="status">
-                                                <option value="Pending">Pending</option>
-                                                <option value="Approved">Approved</option>
-                                                <option value="Cancelled">Cancelled</option>
-                                            </select>
-                                            <VBtn type="submit" :disabled="loading">{{ loading ? 'Updating...' : 'Update' }}</VBtn>
-                                        </form>
-                                    </VCardText>
+                            <!-- Dialog Content -->
+                            <VCard title="Update Subscription Cancellation">
+                                <VDivider class="mt-3" />
 
 
-                                    
-                                </VCard>
-                            </VDialog>
+                                <VCardText>
+                                    <form @submit.prevent="UpdatedSubscriptionCancellationFunction" class="p-2">
+
+                                        <AppSelect v-model="status" :items="statuses"
+                                            prepend-inner-icon="tabler-color-picker" label="Status"
+                                            :rules="[requiredValidator]" />
+                                        <br>
+
+                                        <VBtn type="submit" :disabled="loading">{{ loading ? 'Updating...' : 'Update' }}
+                                        </VBtn>
+                                    </form>
+                                </VCardText>
+
+
+
+                            </VCard>
+                        </VDialog>
                     </template>
-            </VDataTable>
-        </VCard>
-    </VCol>
-</VRow>
+                </VDataTable>
+            </VCard>
+        </VCol>
+    </VRow>
 </template>
-
-
-

@@ -68,7 +68,9 @@ class SupportController extends Controller
     {
    
 		$support = Support::find($id);
-		$support->assigned_to = $request->assigned_to;
+		if($request->assigned_to){
+			$support->assigned_to = $request->assigned_to;
+		}
 		$support->status = $request->status;
 		$support->save();
 		return response()->json([

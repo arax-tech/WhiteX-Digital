@@ -25,6 +25,7 @@ Route::group(['namespace' => 'Api\Admin', 'prefix' => 'admin', 'middleware' => [
 	Route::get('/profile', 'AdminController@profile');
 	Route::post('/update/profile', 'AdminController@update_profile');
 	Route::post('/update/setting', 'AdminController@update_setting');
+	Route::get('/notification/remove/{entry_id}', 'AdminController@remove_notification');
 
 	Route::get('/password', 'PasswordController@password');
 	Route::post('/update/password', 'PasswordController@update_password');

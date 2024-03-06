@@ -23,6 +23,14 @@ class SubscriptionCancellationController extends Controller
 		   'cancellations' => $cancellations,
 		], 200);
     }
+    public function single($id)
+    {
+    	$cancellation =  SubscriptionCancellation::find($id);
+		return response()->json([
+		   'status' => 200,
+		   'cancellation' => $cancellation,
+		], 200);
+    }
     public function store(Request $request)
     {
 	    $cancellation = new SubscriptionCancellation();

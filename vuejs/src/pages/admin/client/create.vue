@@ -1,4 +1,5 @@
 <script setup>
+import Loading from '@/components/Loading.vue';
 import { computed } from 'vue';
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
@@ -12,8 +13,9 @@ const toast = useToast();
 definePage({ meta: { action: 'read', subject: 'Admins' } })
 onMounted(() => document.title = "Admin - Create Client");
 onMounted(() => store.dispatch("GetCustomers"));
-const loading = computed(() => store.state.clients.loading);
-const customers = computed(() => store.state.clients.customers);
+const loading = computed(() => store.state.customers.loading);
+const customers = computed(() => store.state.customers.data);
+const loading1 = computed(() => store.state.clients.loading);
 
 
 const email = ref('')
@@ -47,7 +49,7 @@ onMounted(() => {
 
 const CreateClientFunction = async () => {
     const formData = new FormData();
-    formData.append('email', email.value);
+    formData.append('email', `${email.value.id}--|--${email.value.email}`);
     formData.append('permissions', JSON.stringify(checkedPermissions.value));
     formData.append("role", "Client");
     try {
@@ -63,12 +65,10 @@ const CreateClientFunction = async () => {
 
 
 const ValidateFunction = () => {
-    console.log(email.value.length);
-    if (email.value.length > 0) {
-        CreateClientFunction();
-    } else {
-        toast.error('Email is required...');
-    }
+    refForm?.value?.validate().then(({ valid: isValid }) => {
+        if (isValid)
+            CreateClientFunction()
+    })
 
 }
 
@@ -76,9 +76,11 @@ const ValidateFunction = () => {
 
 <template>
     <VRow>
-        <VCol cols="12">
+        <Loading v-if="loading" />
+        <VCol v-else cols="12">
             <VCard>
-                <VCardText style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+                <VCardText
+                    style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
                     <div>
                         <h2>Create Client</h2>
                     </div>
@@ -97,9 +99,13 @@ const ValidateFunction = () => {
 
 
                             <VCol cols="12" md="12">
-                                <!-- <AppTextField v-model="email" prepend-inner-icon="tabler-mail" placeholder="Email" persistent-placeholder label="Email" :rules="[requiredValidator, emailValidator]" /> -->
-                                <!-- <AppSelect :items="customers[email]" v-model="email" prepend-inner-icon="tabler-mail" placeholder="Email" persistent-placeholder label="Email"  :rules="[requiredValidator, emailValidator]" /> -->
-                                <div className="form-group">
+
+                                <div v-if="loading"></div>
+                                <AppSelect v-else v-model="email" :items="customers" item-title="email"
+                                    item-value="email" label="Client" prepend-inner-icon="tabler-user"
+                                    persistent-placeholder return-object :rules="[requiredValidator]" />
+
+                                <!-- <div className="form-group">
                                     <label className="form-label">Email</label>
                                     <select class="form-control" v-model="email">
                                         <option v-for="(customer, index) in customers" :key="index"
@@ -107,7 +113,7 @@ const ValidateFunction = () => {
                                             {{ customer.username }} ---- {{ customer.email }}
                                         </option>
                                     </select>
-                                </div>
+                                </div> -->
 
 
                             </VCol>
@@ -159,7 +165,7 @@ const ValidateFunction = () => {
                             <!-- <button @click="getCheckedData">Get Checked Data</button> -->
 
                             <VCol cols="12">
-                                <VBtn type="submit" :disabled="loading">{{ loading ? 'Creating...' : 'Create' }}</VBtn>
+                                <VBtn type="submit" :disabled="loading1">{{ loading1 ? 'Creating...' : 'Create' }}</VBtn>
                             </VCol>
                         </VRow>
                     </VForm>

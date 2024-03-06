@@ -54,7 +54,7 @@ const verify = async () => {
             useCookie('userData').value = response?.user;
             useCookie('accessToken').value = response?.token;
 
-            window.location.href = route.query.to ? String(route.query.to) : '/admin/dashboard';
+            window.location.href = route.query.to ? String(route.query.to) : response?.user?.role === 'Admin' ? '/admin/dashboard' : '/client/dashboard';
 
         } else if (response.status === 401) {
             toast.error(response.message);

@@ -45,7 +45,7 @@ class ClientController extends Controller
 			$client->reset_token = $reset_token;
 			$client->save();
 
-			$verify_url = "http://localhost:3000/set/password/".$reset_token;
+			$verify_url = "http://localhost:5173/password/set/".$reset_token;
 			$details = ['verify_url' =>  $verify_url];
 			   
 			Mail::to($client->email)->send(new \App\Mail\NewAccount($details));

@@ -31,6 +31,16 @@ const data = ref({
 });
 
 
+const refForm = ref()
+const ValidateFunction = (event) => {
+    event.preventDefault();
+    refForm?.value?.validate().then(({ valid: isValid }) => {
+        if (isValid)
+            UpdateProfileFunction();
+    })
+}
+
+
 const UpdateSettingFunction = async (event) => {
     event.preventDefault();
     const formData = new FormData();
@@ -69,46 +79,56 @@ const UpdateSettingFunction = async (event) => {
 
                 <VCardText class="pt-0">
                     <!-- 👉 Form -->
-                    <form class="mt-6" @submit.prevent="UpdateSettingFunction"  enctype="multipart/form-data">
+                    <VForm class="mt-6" @submit.prevent="ValidateFunction">
                         <VRow>
 
 
                             <VCol md="3" cols="12">
-                                <AppTextField prepend-inner-icon="tabler-user" v-model="data.company_name" placeholder="Company Name" persistent-placeholder label="Company Name" />
+                                <AppTextField prepend-inner-icon="tabler-user" v-model="data.company_name"
+                                    placeholder="Company Name" persistent-placeholder label="Company Name" :rules="[requiredValidator]"  />
                             </VCol>
 
                             <VCol md="3" cols="12">
-                                <AppTextField prepend-inner-icon="tabler-mail" v-model="data.email" placeholder="Email" persistent-placeholder label="Email" />
+                                <AppTextField prepend-inner-icon="tabler-mail" v-model="data.email" placeholder="Email"
+                                    persistent-placeholder label="Email" :rules="[requiredValidator]"  />
                             </VCol>
                             <VCol md="3" cols="12">
-                                <AppTextField prepend-inner-icon="tabler-phone" v-model="data.phone1" placeholder="Phone1" persistent-placeholder label="Phone1" />
+                                <AppTextField prepend-inner-icon="tabler-phone" v-model="data.phone1"
+                                    placeholder="Phone1" persistent-placeholder label="Phone1" :rules="[requiredValidator]"  />
                             </VCol>
                             <VCol md="3" cols="12">
-                                <AppTextField prepend-inner-icon="tabler-phone" v-model="data.phone2" placeholder="Phone2" persistent-placeholder label="Phone2" />
+                                <AppTextField prepend-inner-icon="tabler-phone" v-model="data.phone2"
+                                    placeholder="Phone2" persistent-placeholder label="Phone2" :rules="[requiredValidator]"  />
                             </VCol>
                             <VCol md="4" cols="12">
-                                <AppTextField prepend-inner-icon="tabler-phone" v-model="data.phone3" placeholder="Phone3" persistent-placeholder label="Phone3" />
+                                <AppTextField prepend-inner-icon="tabler-phone" v-model="data.phone3"
+                                    placeholder="Phone3" persistent-placeholder label="Phone3" :rules="[requiredValidator]"  />
                             </VCol>
                             <VCol md="4" cols="12">
-                                <AppTextField prepend-inner-icon="tabler-map-pin" v-model="data.address_1" placeholder="Address 1" persistent-placeholder label="Address 1" />
+                                <AppTextField prepend-inner-icon="tabler-map-pin" v-model="data.address_1"
+                                    placeholder="Address 1" persistent-placeholder label="Address 1" :rules="[requiredValidator]"  />
                             </VCol>
                             <VCol md="4" cols="12">
-                                <AppTextField prepend-inner-icon="tabler-map-pin" v-model="data.address_2" placeholder="Address 2" persistent-placeholder label="Address 2" />
+                                <AppTextField prepend-inner-icon="tabler-map-pin" v-model="data.address_2"
+                                    placeholder="Address 2" persistent-placeholder label="Address 2" :rules="[requiredValidator]"  />
                             </VCol>
                             <VCol md="4" cols="12" class="mt-2">
-                                <VFileInput label="Fevicon" variant="filled" @change="event => data.fevicon = event.target.files[0]" />
+                                <VFileInput label="Fevicon" variant="filled"
+                                    @change="event => data.fevicon = event.target.files[0]"   />
                             </VCol>
                             <VCol md="4" cols="12" class="mt-2">
-                                <VFileInput label="Menu Logo" variant="filled" @change="event => data.menu_logo = event.target.files[0]" />
+                                <VFileInput label="Menu Logo" variant="filled"
+                                    @change="event => data.menu_logo = event.target.files[0]"   />
                             </VCol>
                             <VCol md="4" cols="12" class="mt-2">
-                                <VFileInput label="Invoice Logo" variant="filled" @change="event => data.invoice_logo = event.target.files[0]" />
+                                <VFileInput label="Invoice Logo" variant="filled"
+                                    @change="event => data.invoice_logo = event.target.files[0]"   />
                             </VCol>
                             <VCol cols="12" class="d-flex flex-wrap gap-4">
                                 <VBtn type="submit" :disabled="loading">{{ loading ? 'Updating...' : 'Update' }}</VBtn>
                             </VCol>
                         </VRow>
-                    </form>
+                    </VForm>
                 </VCardText>
             </VCard>
         </VCol>

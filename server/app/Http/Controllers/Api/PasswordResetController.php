@@ -16,6 +16,7 @@ class PasswordResetController extends Controller
 	   
     public function forgot(Request $request): JsonResponse
     {
+        
         $user = User::where('email',$request->email)->first();
 
         if(!$user){
@@ -30,7 +31,7 @@ class PasswordResetController extends Controller
             $user->save();
 
 
-            $verify_url = "http://localhost:3000/reset/password/".$reset_token;
+            $verify_url = "http://localhost:5173/password/reset/".$reset_token;
             $details = ['verify_url' =>  $verify_url];
                
             Mail::to($user->email)->send(new \App\Mail\ForgotPassword($details));

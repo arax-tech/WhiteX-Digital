@@ -4,13 +4,56 @@ import authV2ForgotPasswordIllustrationDark from '@images/pages/auth-v2-forgot-p
 import authV2ForgotPasswordIllustrationLight from '@images/pages/auth-v2-forgot-password-illustration-light.png'
 import authV2MaskDark from '@images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@images/pages/misc-mask-light.png'
+import { useRoute, useRouter } from 'vue-router'
+import { useToast } from 'vue-toast-notification'
+import { useStore } from 'vuex'
 
-const email = ref('')
+
 const authThemeImg = useGenerateImageVariant(authV2ForgotPasswordIllustrationLight, authV2ForgotPasswordIllustrationDark)
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
 
 definePage({ meta: { layout: 'blank', unauthenticatedOnly: true, } })
 onMounted(() => document.title = "Forgot Password");
+
+
+
+
+const loading = computed(() => store.state.password.loading);
+
+
+const route = useRoute();
+const router = useRouter();
+const toast = useToast();
+const store = useStore();
+
+const refForm = ref()
+const email = ref('')
+
+
+const ValidateFunction = () => {
+    refForm?.value?.validate().then(({ valid: isValid }) => {
+        if (isValid)
+            ForgotPasswordFunction()
+    })
+
+}
+
+const ForgotPasswordFunction = async () => {
+    try {
+        console.log('here')
+        const response = await store.dispatch('ForgotPasswordAction', {email : email.value});
+        // console.log(response);
+        if (response.status === 200) {
+            toast.success(response.message);
+            router.push('/login');
+        }
+        if (response.status === 422) {
+            toast.error(response.message);
+        }
+    } catch (error) {
+        console.error(error);
+    }
+}
 </script>
 
 <template>
@@ -38,18 +81,18 @@ onMounted(() => document.title = "Forgot Password");
                 </VCardText>
 
                 <VCardText>
-                    <VForm @submit.prevent="() => { }">
+                    <VForm ref="refForm" @submit.prevent="ValidateFunction">
                         <VRow>
                             <!-- email -->
                             <VCol cols="12">
                                 <AppTextField v-model="email" autofocus label="Email" type="email"
-                                    placeholder="johndoe@email.com" />
+                                    placeholder="johndoe@email.com" :rules="[requiredValidator, emailValidator]" />
                             </VCol>
 
                             <!-- Reset link -->
                             <VCol cols="12">
-                                <VBtn block type="submit">
-                                    Send Reset Link
+                                <VBtn block type="submit" :disabled="loading">
+                                    {{ loading ? 'Sending...' : ' Send Reset Link' }}
                                 </VBtn>
                             </VCol>
 

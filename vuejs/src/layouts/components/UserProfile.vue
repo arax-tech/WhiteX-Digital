@@ -13,6 +13,7 @@ const userData = useCookie('userData')
 
 
 const user = computed(() => store.state.auth.user);
+const notifications = computed(() => store.state.auth.notifications);
 const loading = computed(() => store.state.auth.loading);
 
 const logout = async () => {
@@ -36,13 +37,16 @@ const logout = async () => {
 
           // Reset ability to initial ability
           ability.update([])
+
+          localStorage.removeItem('role');
+          localStorage.removeItem('token');
           await router.push('/login')
      }
 
 
 }
 
-const userProfileList = [
+const adminProfileList = [
      { type: 'divider' },
      {
           type: 'navItem',
@@ -61,6 +65,29 @@ const userProfileList = [
           icon: 'tabler-lock',
           title: 'Update Password',
           to: { name: 'admin-password' },
+     },
+     { type: 'divider' },
+     {
+          type: 'navItem',
+          icon: 'tabler-logout',
+          title: 'Logout',
+          onClick: logout,
+     },
+]
+
+const clientProfileList = [
+     { type: 'divider' },
+     {
+          type: 'navItem',
+          icon: 'tabler-user',
+          title: 'Profile',
+          to: { name: 'client-profile' },
+     },
+     {
+          type: 'navItem',
+          icon: 'tabler-lock',
+          title: 'Update Password',
+          to: { name: 'client-password' },
      },
      { type: 'divider' },
      {
@@ -103,7 +130,8 @@ const userProfileList = [
                          </VListItem>
 
                          <PerfectScrollbar :options="{ wheelPropagation: false }">
-                              <template v-for="item in userProfileList" :key="item.title">
+                              <template v-for="item in user?.role === 'Admin' ? adminProfileList : clientProfileList"
+                                   :key="item.title">
                                    <VListItem v-if="item.type === 'navItem'" :to="item.to"
                                         @click="item.onClick && item.onClick()">
                                         <template #prepend>

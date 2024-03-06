@@ -18,8 +18,17 @@ const data = ref({
 });
 
 
-const UpdatePasswordFunction = async (event) => {
+const refForm = ref()
+const ValidateFunction = (event) => {
     event.preventDefault();
+    refForm?.value?.validate().then(({ valid: isValid }) => {
+        if (isValid)
+            UpdatePasswordFunction();
+    })
+}
+
+const UpdatePasswordFunction = async (event) => {
+    
 
     try {
         if (data.value.new_password === data.value.confirm_password) {
@@ -63,25 +72,26 @@ const UpdatePasswordFunction = async (event) => {
 
                 <VCardText class="pt-0">
                     <!-- 👉 Form -->
-                    <form class="mt-6" @submit.prevent="UpdatePasswordFunction">
+                    <VForm ref="refForm" class="mt-6" @submit.prevent="ValidateFunction">
                         <VRow>
                             <VCol md="12" cols="12">
                                 <AppTextField prepend-inner-icon="tabler-lock" v-model="data.current_password"
-                                    placeholder="Current Password" persistent-placeholder label="Current Password" />
+                                    placeholder="Current Password" persistent-placeholder label="Current Password" :rules="[requiredValidator]"  />
                             </VCol>
                             <VCol md="6" cols="12">
                                 <AppTextField prepend-inner-icon="tabler-lock" v-model="data.new_password"
-                                    placeholder="New Password" persistent-placeholder label="New Password" />
+                                    placeholder="New Password" persistent-placeholder label="New Password" :rules="[requiredValidator]"  />
                             </VCol>
                             <VCol md="6" cols="12">
                                 <AppTextField prepend-inner-icon="tabler-lock" v-model="data.confirm_password"
-                                    placeholder="Confirm Password" persistent-placeholder label="Confirm Password" />
+                                    placeholder="Confirm Password" persistent-placeholder label="Confirm Password" :rules="[requiredValidator]"  />
                             </VCol>
                             <VCol cols="12" class="d-flex flex-wrap gap-4">
-                                <VBtn type="submit" :disabled="loading">{{ loading ? 'Updating...' : 'Update' }}</VBtn>
+                                <VBtn type="submit" :disabled="loading">{{ loading ? 'Updating...' : 'Update' }}
+                                </VBtn>
                             </VCol>
                         </VRow>
-                    </form>
+                    </VForm>
                 </VCardText>
             </VCard>
         </VCol>

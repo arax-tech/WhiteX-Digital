@@ -9,7 +9,7 @@ export const redirects = [
     name: "index",
     redirect: (to) => {
       const userData = useCookie("userData");
-      const userRole = userData.value?.role;
+      const userRole = localStorage.getItem('role');
       if (userRole === "Admin") return { name: "admin-dashboard" };
       if (userRole === "Client") return { name: "client-dashboard" };
 

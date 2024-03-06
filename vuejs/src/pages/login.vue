@@ -35,8 +35,8 @@ const errors = ref({
 const refVForm = ref()
 
 const credentials = ref({
-    email: 'admin@info.com',
-    password: '123',
+    email: '',
+    password: '',
 })
 
 const loading = computed(() => store.state.auth.loading);

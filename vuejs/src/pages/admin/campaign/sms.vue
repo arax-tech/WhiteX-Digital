@@ -3,7 +3,7 @@ import { onMounted } from 'vue';
 
 
 definePage({ meta: { action: 'read', subject: 'Admins' } })
-onMounted(() => document.title = "Admin - SMS Campaign");
+onMounted(() => document.title = "Admin - Campaign SMS");
 
 
 const data = ref({

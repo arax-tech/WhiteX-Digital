@@ -10,7 +10,7 @@ const store = useStore();
 const toast = useToast();
 
 definePage({ meta: { action: 'read', subject: 'Admins' } })
-onMounted(() => document.title = "Admin - Subscriptions");
+onMounted(() => document.title = "Admin - Billing");
 onMounted(() => store.dispatch("GetSubscriptions"));
 
 const subscriptions = computed(() => store.state.subscriptions.subscriptions);
