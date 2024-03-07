@@ -10,9 +10,8 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
 
 // @layouts plugin
 import { VerticalNavLayout } from '@layouts'
+import { onBeforeMount, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { onMounted } from 'vue'
-
 // SECTION: Loading Indicator
 const isFallbackStateActive = ref(false)
 const refLoadingIndicator = ref(null)
@@ -29,7 +28,6 @@ watch([
 
 // !SECTION
 
-
 const router = useRouter()
 const loading = ref(false);
 let role = localStorage.getItem('role');
@@ -43,12 +41,17 @@ let role = localStorage.getItem('role');
 
 
 
-import { useStore } from 'vuex';
+import { useStore } from 'vuex'
 
 const store = useStore();
+onBeforeMount(async () => {
+    await store.dispatch("GetAuthUser");
+});
+
+
 
 const user = computed(() => store.state.auth.user);
-const permissions = JSON.parse(user.value.permissions);
+const permissions = JSON.parse(user && user.value ? user.value.permissions : "{}");
 
 
 const navItems = [
@@ -85,20 +88,20 @@ const navItems = [
         to: 'apps-email',
         read: permissions["Email"]?.includes("ReadEmail")
     },
-    {
-        title: 'Chat',
-        icon: { icon: 'tabler-message-circle' },
-        to: 'apps-chat',
-        read: permissions["Chat"]?.includes("ReadChat")
-    },
+    // {
+    //     title: 'Chat',
+    //     icon: { icon: 'tabler-message-circle' },
+    //     to: 'apps-chat',
+    //     read: permissions["Chat"]?.includes("ReadChat")
+    // },
     {
         title: "Campaigns",
         icon: { icon: "tabler-send" },
         children: [
-            { title: "Campaign", to: "admin-campaign",read: permissions["Campaign"]?.includes("ReadCampaign") },
-            { title: "SMS", to: "admin-campaign-sms",read: permissions["CampaignSMS"]?.includes("ReadCampaignSMS") },
-            { title: "Email", to: "admin-campaign-email",read: permissions["CampaignEmail"]?.includes("ReadCampaignEmail") },
-            { title: "APIs Config", to: "admin-campaign-config",read: permissions["CampaignApiConfig"]?.includes("ReadCampaignApiConfig") },
+            // { title: "Campaign", to: "admin-campaign", read: permissions["Campaign"]?.includes("ReadCampaign") },
+            { title: "SMS Campaign", to: "admin-campaign-sms", read: permissions["CampaignSMS"]?.includes("ReadCampaignSMS") },
+            { title: "Email Campaign", to: "admin-campaign-email", read: permissions["CampaignEmail"]?.includes("ReadCampaignEmail") },
+            { title: "APIs Config", to: "admin-campaign-config", read: permissions["CampaignApiConfig"]?.includes("ReadCampaignApiConfig") },
         ],
     },
     {
@@ -111,8 +114,8 @@ const navItems = [
         title: "Invoice Management",
         icon: { icon: "tabler-printer" },
         children: [
-            { title: "WooCommerce", to: "admin-invoice-woocommerce",read: permissions["WooCommerceInvoice"]?.includes("ReadWooCommerceInvoice") },
-            { title: "Custom", to: "admin-invoice",read: permissions["CustomInvoice"]?.includes("ReadCustomInvoice") },
+            { title: "WooCommerce", to: "admin-invoice-woocommerce", read: permissions["WooCommerceInvoice"]?.includes("ReadWooCommerceInvoice") },
+            { title: "Custom", to: "admin-invoice", read: permissions["CustomInvoice"]?.includes("ReadCustomInvoice") },
         ],
     },
     { heading: "Others" },
@@ -120,25 +123,25 @@ const navItems = [
         title: "Pop-up Messages",
         icon: { icon: "tabler-message-circle" },
         to: "admin-popup-messages",
-         read: permissions["PopUpMessages"]?.includes("ReadPopUpMessages")
+        read: permissions["PopUpMessages"]?.includes("ReadPopUpMessages")
     },
     {
         title: "Lead Tracking",
         icon: { icon: "tabler-color-swatch" },
         to: "admin-lead",
-         read: permissions["LeadTracking"]?.includes("ReadLeadTracking")
+        read: permissions["LeadTracking"]?.includes("ReadLeadTracking")
     },
     {
         title: "Support Ticket",
         icon: { icon: "tabler-help-circle" },
         to: "admin-support",
-         read: permissions["SupportTicket"]?.includes("ReadSupportTicket")
+        read: permissions["SupportTicket"]?.includes("ReadSupportTicket")
     },
     {
         title: "Feedback",
         icon: { icon: "tabler-star" },
         to: "admin-feedback",
-         read: permissions["FeedBack"]?.includes("ReadFeedBack")
+        read: permissions["FeedBack"]?.includes("ReadFeedBack")
     },
     {
         title: "Custom Menu",
@@ -160,34 +163,6 @@ const navItems = [
         return menuItem.children.length > 0;
     }
 });
-
-
-
-
-/* const navItems1 = [
-    { heading: "Main" },
-    {
-        title: "Dashboard",
-        icon: { icon: "tabler-smart-home" },
-        to: "client-dashboard",
-        read: true
-    },
-    {
-        title: "Subscriptions",
-        icon: { icon: "tabler-file" },
-        children: [
-            { title: "Subscription", to: "client-subscription", read: true },
-            { title: "Cancellation Requests", to: "client-subscription-cancellation-requests", read: false },
-        ],
-    },
-].filter(menuItem => {
-    if (!menuItem.children) {
-        return menuItem.read !== false;
-    } else {
-        return menuItem.children.filter(c => c.read !== false);
-    }
-}); */
-
 
 
 const navItems1 = [
@@ -259,6 +234,16 @@ const navItems1 = [
     }
 });
 
+
+onMounted(() => {
+    setTimeout(() => {
+        if (!localStorage.getItem('Refresh')) {
+            localStorage.setItem('Refresh', 'true');
+            location.reload();
+        }
+    }, 3000);
+
+});
 
 
 // onMounted(() => {

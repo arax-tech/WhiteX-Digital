@@ -74,7 +74,7 @@ const menus = computed(() => store.state.auth.menus);
 const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered)
 
 const handleClick = (menu) => {
-  if (menu.status === 'Active') {
+  if (menu?.status === 'Active') {
     window.open(menu.link, '_blank');
   }
 }

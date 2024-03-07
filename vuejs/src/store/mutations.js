@@ -220,7 +220,6 @@ export const SetSubscription = (state, [loading, data = null]) => {
 
     state.subscription.loading = loading;
 };
-
 export const SetClientBilling = (state, [loading, data = null]) => {
     if (data) {
         state.clientBilling = {

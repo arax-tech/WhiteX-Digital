@@ -50,6 +50,7 @@ declare module 'vue-router/auto/routes' {
     'admin-campaign-config': RouteRecordInfo<'admin-campaign-config', '/admin/campaign/config', Record<never, never>, Record<never, never>>,
     'admin-campaign-email': RouteRecordInfo<'admin-campaign-email', '/admin/campaign/email', Record<never, never>, Record<never, never>>,
     'admin-campaign-sms': RouteRecordInfo<'admin-campaign-sms', '/admin/campaign/sms', Record<never, never>, Record<never, never>>,
+    'admin-campaign-sms-create': RouteRecordInfo<'admin-campaign-sms-create', '/admin/campaign/sms/create', Record<never, never>, Record<never, never>>,
     'admin-client': RouteRecordInfo<'admin-client', '/admin/client', Record<never, never>, Record<never, never>>,
     'admin-client-create': RouteRecordInfo<'admin-client-create', '/admin/client/create', Record<never, never>, Record<never, never>>,
     'admin-client-edit-id': RouteRecordInfo<'admin-client-edit-id', '/admin/client/edit/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,

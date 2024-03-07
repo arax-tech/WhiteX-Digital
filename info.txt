@@ -1,0 +1,5 @@
+ 1. Status Drop down in sms/email compain  = Running / Pose
+ 2. content to text area
+ 3. stats page 
+ 4. email will be same as it is (title, subject, content, status)
+ 5. credit page design for client action ad btn 

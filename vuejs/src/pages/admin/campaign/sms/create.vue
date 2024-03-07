@@ -40,8 +40,9 @@ const ValidateFunction = () => {
                     <VForm class="mt-6" ref="refForm" @submit.prevent="ValidateFunction">
                         <VRow>
                             <VCol cols="12" md="6">
-                                <AppTextField v-model="data.sender_id" prepend-inner-icon="tabler-mail" placeholder="Email"
-                                    persistent-placeholder label="Sender ID" :rules="[requiredValidator, emailValidator]" />
+                                <AppTextField v-model="data.sender_id" prepend-inner-icon="tabler-mail"
+                                    placeholder="Email" persistent-placeholder label="Sender ID"
+                                    :rules="[requiredValidator, emailValidator]" />
                             </VCol>
                             <VCol cols="12" md="6">
                                 <AppTextField v-model="data.group_recipients" prepend-inner-icon="tabler-mail"
@@ -132,9 +133,7 @@ const ValidateFunction = () => {
 
 
 
-        </VCard>
-    </VCol>
-</VRow></template>
-
-
-
+            </VCard>
+        </VCol>
+    </VRow>
+</template>

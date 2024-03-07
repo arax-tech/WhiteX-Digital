@@ -40,6 +40,7 @@ const logout = async () => {
 
           localStorage.removeItem('role');
           localStorage.removeItem('token');
+          localStorage.removeItem('Refresh');
           await router.push('/login')
      }
 
