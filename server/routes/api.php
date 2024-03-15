@@ -1,5 +1,7 @@
+
 <?php
 
+use App\Http\Controllers\Api\Campaign\CampaignController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,6 +18,34 @@ Route::group(['namespace' => 'Api', 'prefix' => 'auth'], function (){
 
 Route::group(['namespace' => 'Api', 'prefix' => 'auth', 'middleware' => 'auth:sanctum'], function (){
 	Route::get('logout', 'AuthController@logout');
+});
+Route::group(['namespace' => 'Api\Campaign', 'prefix' => 'campaign', 'middleware' => ['auth:sanctum']], function (){
+	Route::get('/', 'CampaignController@index');
+	Route::post('/store', 'CampaignController@store');
+	Route::get('/{id}', 'CampaignController@show');
+	Route::post('/delete/{id}', 'CampaignController@destroy');
+	Route::get('/inbox/{type}','CampaignController@inbox');
+	Route::get('/inbox/{id}}/message','CampaignController@get_chat');
+	Route::post('/inbox/message/delete','CampaignController@delete_inbox_message');
+	Route::post('/inbox/delete','CampaignController@delete_inbox');
+	Route::post('/inbox/change_status','CampaignController@change_inbox_status');
+});
+Route::group(['namespace' => 'Api\Leads', 'prefix' => 'leads', 'middleware' => ['auth:sanctum', 'Admin']], function (){
+	Route::get('/ghl', 'GhlLeadsController@index');
+	Route::post('/store', 'GhlLeadsController@store');
+	Route::get('/show/{id}', 'GhlLeadsController@show');
+	Route::post('/delete/{id}', 'GhlLeadsController@destroy');
+	Route::post('/location_id', 'GhlLeadsController@saveApi');
+	Route::get('/location_id', 'GhlLeadsController@getApi');
+	Route::post('/update/{id}', 'GhlLeadsController@update');
+});
+
+Route::group(['namespace' => 'Api\Commerce', 'prefix' => 'commerce'], function (){
+	Route::get('/total_order', 'WoocommerceController@total_order');
+	Route::get('/average_value', 'WoocommerceController@average_value');
+	Route::get('/top_seller', 'WoocommerceController@top_seller');
+	Route::get('/catagory_sale/{startDate}/{endDate}', 'WoocommerceController@catagory_sale');
+	Route::get('/churn', 'WoocommerceController@churn');
 });
 
 
@@ -104,6 +134,11 @@ Route::group(['namespace' => 'Api\Admin', 'prefix' => 'admin', 'middleware' => [
 
 	// WpForm
 	Route::get('/lead', 'LeadController@index');
+	// Credits
+	Route::get('/client/credit/{id}','ClientController@credit');
+	Route::post('/client/editcredit','ClientController@editCredit');
+
+	Route::post('/config/api','AdminController@apiKey');
 });
 
 

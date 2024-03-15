@@ -25,6 +25,7 @@ class AuthController extends Controller
 
     	    return response()->json([
     	       'status' => 200,
+			   'token' => $user->createToken('WhiteX')->plainTextToken,
     	       'message'=> 'Registration Successfully...'
     	    ]);
 	    }else{

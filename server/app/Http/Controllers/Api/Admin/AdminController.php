@@ -92,5 +92,25 @@ class AdminController extends Controller
            'status' => 200,
            'message'=> 'Setting Update Successfully...',
         ], 200);
+	public function apiKey(Request $request)
+    {
+    	$config = Settings::where('type', $request->type)->first();
+		if(!$config){
+			$config = new Settings();
+			$config->type = $request->type;
+			$config->value = $request->value;
+			$config->save();
+			return response()->json([
+			'status' => 200,
+			'message' => "key Updated",
+			], 200);
+		}else{
+			$config->value = $request->value;
+			$config->save();
+			return response()->json([
+			'status' => 200,
+			'message' => "key Updated",
+			], 200);
+		}
     }
 }
